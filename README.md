@@ -11,7 +11,7 @@ This is the GEANT4 Monte Calro simulation code for WAGASCI project at J-PARC. Al
 
 ### ROOT
 
-[ROOT](https://root.cern.ch/) an object-oriented program and library developed by CERN.
+[ROOT](https://root.cern.ch/) is an object-oriented program and library developed by CERN.
 ROOT 5.22 has been tested.
 
 ## Run the simulation
