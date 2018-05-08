@@ -1,4 +1,4 @@
-GEANT4 for simulation code for WAGASCI+BabyMIND at J-PARC
+GEANT4 simulation code for WAGASCI+BabyMIND at J-PARC
 ========
 
 This is the GEANT4 Monte Calro simulation code WAGASCI project at J-PARC. All the detector components, WAGASCI, Proton Module, Side MRD and Baby-MIND, are included.
