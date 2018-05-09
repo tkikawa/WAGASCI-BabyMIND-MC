@@ -349,6 +349,6 @@ void B2EventAction::EndOfEventAction(const G4Event* anEvent)
   } // end of Flag
   
   else
-    G4cout << "------- End of EventAction -->|\n" << G4endl;
+    G4cout << "------- End of Event Action -------\n" << G4endl;
   
 }

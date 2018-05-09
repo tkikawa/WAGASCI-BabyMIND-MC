@@ -739,8 +739,8 @@ G4VPhysicalVolume* B2DetectorConstruction::Construct()
   vscint_intLV->SetSensitiveDetector( avlayerSD );//INGRID module
   vscint2_intLV->SetSensitiveDetector( avlayerSD );//SciBar type for Proton Module
   vscint3_intLV->SetSensitiveDetector( avlayerSD );//INGRID type for Proton Module
-  vwscint_intLV->SetSensitiveDetector( ahlayerSD );//Plane scintillator for WAGASCI
-  vwgridscint_intLV->SetSensitiveDetector( ahlayerSD );//Grid scintillator for WAGASCI
+  vwscint_intLV->SetSensitiveDetector( avlayerSD );//Plane scintillator for WAGASCI
+  vwgridscint_intLV->SetSensitiveDetector( avlayerSD );//Grid scintillator for WAGASCI
   smsci_intLV->SetSensitiveDetector( avlayerSD );//SMRD
   bmvsci_intLV->SetSensitiveDetector( avlayerSD );//BabyMIND
  

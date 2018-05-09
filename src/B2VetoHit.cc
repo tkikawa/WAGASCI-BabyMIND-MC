@@ -36,8 +36,8 @@ B2VetoHit::B2VetoHit(G4int dID0, G4int P0, G4int trkid, G4double e,G4double eq, 
   mod = dID0/(PLNMAX*CHMAX);
   
   if(mod==0){//Proton Module
-    pln = (detID-mod*PLNMAX*CHMAX)/CHMAX + PLNOFFSET;
-    ch = detID-mod*PLNMAX*CHMAX-(pln-PLNOFFSET)*CHMAX;      
+    pln = (detID-mod*PLNMAX*CHMAX)/CHMAX + PLNOFFSETPM;
+    ch = detID-mod*PLNMAX*CHMAX-(pln-PLNOFFSETPM)*CHMAX;
     if( pln==19 || pln==21 ) view = TopView;
     else if( pln==18 || pln==20 ) view = SideView;
   }
