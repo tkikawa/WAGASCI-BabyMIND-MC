@@ -14,16 +14,10 @@ class B2VetoSD : public G4VSensitiveDetector {
   G4THitsCollection<B2VetoHit>* vetoHitCollection;
   B2Response *ingresp;
   G4double TotalvetoDep;
-  // veto bar of 12.5cm
-  //G4int vetoID[100]; //store only the TrackerID where a Hit is created (<280)
-  //G4double DEP[100];
-  // veto bar of 5cm
-  G4int vetoID[300]; // store only the TrackerID where a Hit is created (<700)
-  G4double DEP[300];
-  G4int fHIT;
+  int mode;
  
 public:
-  B2VetoSD(const G4String& name);
+  B2VetoSD(const G4String& name, int MODE);
   virtual ~B2VetoSD();
 
   // virtual methods

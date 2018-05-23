@@ -9,11 +9,11 @@
 #include "B2HLayerSD.hh"
 
 
-B2HLayerSD::B2HLayerSD(const G4String& name)
+B2HLayerSD::B2HLayerSD(const G4String& name, int MODE)
   : G4VSensitiveDetector(name)
 {
   collectionName.insert("hlayerHitCollection");
-
+  mode = MODE;
   ingresp = new B2Response();
 }
 
@@ -35,7 +35,7 @@ void B2HLayerSD::Initialize(G4HCofThisEvent* HCTE)
   HCTE->AddHitsCollection(HCID,hlayerHitCollection);
 }
 
-//
+
 G4bool B2HLayerSD::ProcessHits(G4Step* aStep, 
 				G4TouchableHistory* ROhist)
 {
@@ -53,7 +53,7 @@ G4bool B2HLayerSD::ProcessHits(G4Step* aStep,
   // volume information must be extracted from Touchable of "PreStepPoint"
   const G4VTouchable* Touchable = aStep->GetPreStepPoint()->GetTouchable();
   G4int detID = Touchable->GetVolume(0)->GetCopyNo();
-	G4int trackID = track->GetTrackID();
+  G4int trackID = track->GetTrackID();
   G4int PDG = track->GetDefinition()->GetPDGEncoding();
   G4ThreeVector hitPos = aStep->GetPreStepPoint()->GetPosition();
   G4double hittime = aStep->GetPreStepPoint()->GetGlobalTime();
@@ -64,7 +64,7 @@ G4bool B2HLayerSD::ProcessHits(G4Step* aStep,
   
   //
   B2HLayerHit* aHit 
-    = new B2HLayerHit(detID,PDG,trackID,edep,edep_q,hitPos,hittime);
+    = new B2HLayerHit(detID,PDG,trackID,edep,edep_q,hitPos,hittime,mode);
   
   B2HLayerHit* bHit;
   
@@ -86,13 +86,11 @@ G4bool B2HLayerSD::ProcessHits(G4Step* aStep,
   
   hlayerHitCollection->insert( aHit );
   
-  return true;
-  
+  return true; 
 }
 
 void B2HLayerSD::EndOfEvent(G4HCofThisEvent* HCTE)
 {
-
   B2HLayerHit *cHit;
 
   G4double edep_tmp;
@@ -107,6 +105,7 @@ void B2HLayerSD::EndOfEvent(G4HCofThisEvent* HCTE)
   G4int pln;
   G4int ch;
 
+  // apply detector response
   for(G4int k=0;k<hlayerHitCollection->entries();k++) {
 
     cHit = (*hlayerHitCollection)[k];
@@ -135,7 +134,6 @@ void B2HLayerSD::EndOfEvent(G4HCofThisEvent* HCTE)
     cHit->SetLOPE(lope);
     cHit->SetDelayTime(time_tmp);
   }
-
 }
 
 void B2HLayerSD::DrawAll()
@@ -150,4 +148,3 @@ void B2HLayerSD::PrintAll()
      (*hlayerHitCollection)[k]->Print(); 
    //hlayerHitCollection-> PrintAllHits();
 }
-

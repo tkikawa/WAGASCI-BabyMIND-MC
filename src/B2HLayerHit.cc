@@ -15,7 +15,7 @@
 // allocator
 G4Allocator<B2HLayerHit> B2HLayerHitAllocator;
 
-B2HLayerHit::B2HLayerHit(G4int dID0, G4int P0, G4int trkid, G4double e, G4double eq, G4ThreeVector pos, G4double t) 
+B2HLayerHit::B2HLayerHit(G4int dID0, G4int P0, G4int trkid, G4double e, G4double eq, G4ThreeVector pos, G4double t, G4int MODE) 
 {
   detID = dID0;
   trackID = trkid;
@@ -24,6 +24,7 @@ B2HLayerHit::B2HLayerHit(G4int dID0, G4int P0, G4int trkid, G4double e, G4double
   Particle = P0;
   position = pos;
   time = t;
+  mode = MODE;
 
   mod = dID0/(PLNMAX*CHMAX);
   pln = (dID0-mod*PLNMAX*CHMAX)/CHMAX;
@@ -34,38 +35,47 @@ B2HLayerHit::B2HLayerHit(G4int dID0, G4int P0, G4int trkid, G4double e, G4double
   if(ch>CHMAX||ch<0)G4cout<<"error ch"<<ch<<endl;/////////////////
   if(pln>PLNMAX||pln<0)G4cout<<"error pln"<<pln<<endl;/////////////
 
+  if( mod==0 ) {
+    posinmod[0] = pos[0];
+    posinmod[1] = pos[1];
+    if     ( mode==1 ) posinmod[2] = pos[2]+1.36*m;
+    else if( mode==2 ) posinmod[2] = pos[2]+0.78*m;
+    else if( mode==3 ) posinmod[2] = pos[2]+0.2*m;
+  }
+  else if( mod==1 ) {
+    posinmod[0] = pos[0];
+    posinmod[1] = pos[1];
+    if     ( mode==1 ) posinmod[2] = pos[2]+0.58*m;
+    else if( mode==2 ) posinmod[2] = pos[2]+1.56*m;
+    else if( mode==3 ) posinmod[2] = pos[2]+1.56*m;
+  }
+  else if( mod==2 ) {
+    posinmod[0] = pos[0];
+    posinmod[1] = pos[1];
+    if     ( mode==1 ) posinmod[2] = pos[2];
+    else if( mode==2 ) posinmod[2] = pos[2];
+    else if( mode==3 ) posinmod[2] = pos[2]+0.98*m;
+  }
+  else if( mod==3 ) {
+    posinmod[0] = pos[0]+1.08*m;
+    posinmod[1] = pos[1];
+    posinmod[2] = pos[2]+0.33*m;
+  }
+  else if( mod==4 ) {
+    posinmod[0] = pos[0]-1.08*m;
+    posinmod[1] = pos[1];
+    posinmod[2] = pos[2]+0.33*m;
+  }
+  else if( mod==5 ) {
+    posinmod[0] = pos[0]-0.45*m;
+    posinmod[1] = pos[1];
+    posinmod[2] = pos[2]-2.75*m;
+  }
+
 }
-
-B2HLayerHit::B2HLayerHit(G4int dID0, G4double e,G4int P0) 
-{
-  detID = dID0;
-  edep = e;
-  Particle = P0;
-
-}
-
-B2HLayerHit::B2HLayerHit(G4int dID0, G4double e) 
-{
-  detID = dID0;
-  edep = e;
-
-}
-
 
 B2HLayerHit::~B2HLayerHit() 
 {
-}
-
-B2HLayerHit::B2HLayerHit(const B2HLayerHit &right)
-  : G4VHit()
-{
-  detID = right.detID;
-  edep       = right.edep;
-  Particle = right.Particle;
-
-  for(int i=0;i<3;i++) position[i] = right.position[i];
-  eventID = right.eventID;
-
 }
 
 const B2HLayerHit& B2HLayerHit::operator=(const B2HLayerHit &right)
@@ -135,20 +145,20 @@ void B2HLayerHit::Print()
   G4cout.precision(4);
   
   G4cout << " Mod:" << mod 
-		 //<< " detID:" << detID
+    //<< " detID:" << detID
          << " Pln:" << pln 
-		 << " Ch:" << ch 
-		 << " Time:" << time
-	//<< "  Edep:" << G4BestUnit(edep,"Energy")
-		 << " Edep:" << edep
-		 << " p.e.:" << pe
+	 << " Ch:" << ch 
+	 << " Time:" << time
+    //<< "  Edep:" << G4BestUnit(edep,"Energy")
+	 << " Edep:" << edep
+	 << " p.e.:" << pe
          << " PID:" << Particle
-//		 << G4endl;
-		 << " Trk:" << trackID
+    //		 << G4endl;
+	 << " Trk:" << trackID
          << " pos:{" << position[0]/cm << ", "
          << position[1]/cm << ", " << position[2]/cm
          << "}" << G4endl;
-
+  
 }
 
 

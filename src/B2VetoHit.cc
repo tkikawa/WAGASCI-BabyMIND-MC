@@ -14,16 +14,13 @@
 #define TopView 1  // Top View (X-view) : 1
 #define PLNOFFSET 11
 #define PLNOFFSETPM 18
-// Veto Plane # : 11 ~ 14
-// Veto Ch#/Plane : 0 ~ 21
-// Veto Ch/Module : 88 ch
 
 #define THRE 0.3 // MeV
 
 // allocator
 G4Allocator<B2VetoHit> B2VetoHitAllocator;
 
-B2VetoHit::B2VetoHit(G4int dID0, G4int P0, G4int trkid, G4double e,G4double eq, G4ThreeVector pos, G4double t) 
+B2VetoHit::B2VetoHit(G4int dID0, G4int P0, G4int trkid, G4double e,G4double eq, G4ThreeVector pos, G4double t, G4int MODE) 
 {
   detID = dID0;
   trackID = trkid;
@@ -32,6 +29,7 @@ B2VetoHit::B2VetoHit(G4int dID0, G4int P0, G4int trkid, G4double e,G4double eq, 
   Particle = P0;
   position = pos;
   time = t;
+  mode = MODE;
   
   mod = dID0/(PLNMAX*CHMAX);
   
@@ -50,34 +48,17 @@ B2VetoHit::B2VetoHit(G4int dID0, G4int P0, G4int trkid, G4double e,G4double eq, 
   else{
     cout<<"Module "<<mod<<" does not have veto planes."<<endl;
   }
-}
 
-B2VetoHit::B2VetoHit(G4int dID0, G4double e,G4int P0) 
-{
-  detID = dID0;
-  edep = e;
-  Particle = P0;
-
-}
-
-B2VetoHit::B2VetoHit(G4int dID0, G4double e) 
-{
-  detID = dID0;
-  edep = e;
-
+  if( mod==0 ) {
+    posinmod[0] = pos[0];
+    posinmod[1] = pos[1];
+    if     ( mode==1 ) posinmod[2] = pos[2]+1.36*m;
+    else if( mode==2 ) posinmod[2] = pos[2]+0.78*m;
+    else if( mode==3 ) posinmod[2] = pos[2]+0.2*m;
+  }
 }
 
 B2VetoHit::~B2VetoHit() {}
-
-B2VetoHit::B2VetoHit(const B2VetoHit &right)
-  : G4VHit()
-{
-  detID = right.detID;
-  edep       = right.edep;
-  Particle = right.Particle;
-  for(int i=0;i<3;i++) position[i] = right.position[i];  
-  eventID = right.eventID;
-}
 
 const B2VetoHit& B2VetoHit::operator=(const B2VetoHit &right)
 {

@@ -114,7 +114,6 @@ void B2Response::ApplyLightCollection(G4double* edep, G4int mod, G4int view, G4T
 	x = fabs(pos[2]/cm - (scposz-glueshift) );
       }
     }
-    *edep *= exp(-1.*x/sciattleng_wgs);
   }
   else if(mod==3||mod==4){//SMRD
     //Must be implemented based in the future

@@ -14,9 +14,10 @@ class B2HLayerSD : public G4VSensitiveDetector {
   G4THitsCollection<B2HLayerHit>* hlayerHitCollection;
   B2Response *ingresp;
   G4double TotalhlayerDep;
+  int mode;
  
 public:
-  B2HLayerSD(const G4String& name);
+  B2HLayerSD(const G4String& name, int MODE);
   virtual ~B2HLayerSD();
 
   virtual G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);

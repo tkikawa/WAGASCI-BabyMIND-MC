@@ -12,11 +12,12 @@ class G4Step;
 
 class B2VLayerSD : public G4VSensitiveDetector {
   G4THitsCollection<B2VLayerHit>* vlayerHitCollection;
-  G4double TotalvlayerDep;
   B2Response *ingresp;
+  G4double TotalvlayerDep;
+  int mode;
  
 public:
-  B2VLayerSD(const G4String& name);
+  B2VLayerSD(const G4String& name, int MODE);
   virtual ~B2VLayerSD();
 
   // virtual methods

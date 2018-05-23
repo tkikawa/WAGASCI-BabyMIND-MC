@@ -714,6 +714,7 @@ G4VPhysicalVolume* B2DetectorConstruction::Construct()
 
   //*******Magnetic field*******/
   if(magfld){
+    G4cout<<"Magnetic field on"<<G4endl;
     B2MagneticField* myfield = new B2MagneticField;
     G4FieldManager* fieldMgr = G4TransportationManager::GetTransportationManager()->GetFieldManager();
     fieldMgr->SetDetectorField(myfield);
@@ -724,7 +725,7 @@ G4VPhysicalVolume* B2DetectorConstruction::Construct()
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
 
   G4String hlayerSDname = "B2/hlayerSD";
-  ahlayerSD = new B2HLayerSD( hlayerSDname );
+  ahlayerSD = new B2HLayerSD( hlayerSDname, mode );
   SDman->AddNewDetector( ahlayerSD );
   hscint_intLV->SetSensitiveDetector( ahlayerSD );//INGRID module
   hscint2_intLV->SetSensitiveDetector( ahlayerSD );//SciBar type for Proton Module
@@ -734,7 +735,7 @@ G4VPhysicalVolume* B2DetectorConstruction::Construct()
   bmhsci_intLV->SetSensitiveDetector( ahlayerSD );//BabyMIND
 
   G4String vlayerSDname = "B2/vlayerSD";
-  avlayerSD = new B2VLayerSD( vlayerSDname );
+  avlayerSD = new B2VLayerSD( vlayerSDname, mode );
   SDman->AddNewDetector( avlayerSD );
   vscint_intLV->SetSensitiveDetector( avlayerSD );//INGRID module
   vscint2_intLV->SetSensitiveDetector( avlayerSD );//SciBar type for Proton Module
@@ -745,7 +746,7 @@ G4VPhysicalVolume* B2DetectorConstruction::Construct()
   bmvsci_intLV->SetSensitiveDetector( avlayerSD );//BabyMIND
  
   G4String vetoSDname = "B2/vetoSD";
-  avetoSD = new B2VetoSD( vetoSDname );
+  avetoSD = new B2VetoSD( vetoSDname, mode );
   SDman->AddNewDetector( avetoSD );
   SvetoLV->SetSensitiveDetector( avetoSD );//Short veto for INGRID module
   LvetoLV->SetSensitiveDetector( avetoSD );//Long veto for INGRID module
@@ -789,7 +790,7 @@ void B2DetectorConstruction::DefineSpace()
   IngboxposY=0;
   IngboxposZ=0;
 
-  SMRDboxposX=1.23*m;
+  SMRDboxposX=1.08*m;
   SMRDboxposY=0;
   SMRDboxposZ=-0.33*m;
 

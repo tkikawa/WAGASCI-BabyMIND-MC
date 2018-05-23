@@ -9,10 +9,11 @@
 #include "B2VetoSD.hh"
 
 #define DEBUG 0
-B2VetoSD::B2VetoSD(const G4String& name)
+B2VetoSD::B2VetoSD(const G4String& name, int MODE)
   : G4VSensitiveDetector(name)
 {
   collectionName.insert("vetoHitCollection");
+  mode = MODE;
   ingresp = new B2Response();
 }
 
@@ -78,7 +79,7 @@ G4bool B2VetoSD::ProcessHits(G4Step* aStep,
   ingresp->ApplyScintiResponse(&edep_q,track);
 
   B2VetoHit* aHit 
-    = new B2VetoHit(detID,PDG,trackID,edep,edep_q,hitPos,hittime);
+    = new B2VetoHit(detID,PDG,trackID,edep,edep_q,hitPos,hittime,mode);
     
 	B2VetoHit* bHit;
  

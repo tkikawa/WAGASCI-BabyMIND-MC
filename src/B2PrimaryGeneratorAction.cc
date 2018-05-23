@@ -28,8 +28,8 @@ const double HallRadiusMax = 1695.;//cm
 const double HallRadiusMin = 895.;//cm
 
 //for Proton Module
-const double total_mass_sci_pm = 0.56904 ;//ton (total mass)
-const double total_mass_front_pm = 0.028848 ;//ton (total mass of front veto)
+const double total_mass_sci_pm = 0.569208 ;//ton (total mass)
+const double total_mass_front_pm = 0.0288528 ;//ton (total mass of front veto)
 const double ingrid_width = 1 ;//(cm) (total mass of ingrid type)
 const double scibar_width = 1.3; //(cm) (total mass of scibar type)
 const double width_ingrid =1.0; //INGRID type 
@@ -214,7 +214,7 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	fabs(pos[0]) <= 60 &&
 	fabs(pos[1]) <= 60) {
 
-      double front =  total_mass_front_pm / (total_mass_front_pm + total_mass_sci_pm);
+      double front = total_mass_front_pm / total_mass_sci_pm;
 
       if( front > (G4UniformRand()) ){
         vertex_flag=0;
@@ -347,7 +347,8 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4cout << "  Module: " << vtxmod << "\n\n";
 #endif
 
-  particleGun->SetParticlePosition(G4ThreeVector(pos[0]*cm,pos[1]*cm,pos[2]*cm));
+  //particleGun->SetParticlePosition(G4ThreeVector(pos[0]*cm,pos[1]*cm,pos[2]*cm));
+  particleGun->SetParticlePosition(G4ThreeVector(0,0,-0.58*m));
   
   // Input Neut info for T2KReWeight to SK__h1 class
   runaction -> numnu = (neut->Vector).Primary.NumParticle;

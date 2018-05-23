@@ -31,14 +31,14 @@ void B2MagneticField::GetFieldValue(const G4double Point[3], G4double* Bfield) c
   Bfield[1]=0.*tesla;
   Bfield[2]=0.*tesla;
 
-  G4double x = Point[0]-45.;
+  G4double x = Point[0]-45.*cm;
   G4double y = Point[1];	
-  G4double z = Point[2]-(275.-200);
+  G4double z = Point[2]-(275.-200)*cm;
 
   if(x>Xmin&&x<Xmax&&y>Ymin&&y<Ymax&&z>Zmin&&z<Zmax){
 
-    int xint = (int)(x-Xmin)/(Xmax-Xmin);
-    int yint = (int)(y-Ymin)/(Ymax-Ymin);
+    int xint = (int)(x-Xmin)/(Xmax-Xmin)*Xbin;
+    int yint = (int)(y-Ymin)/(Ymax-Ymin)*Ybin;
     Bfield[0] = Bx[xint][yint]*tesla;
     Bfield[1] = By[xint][yint]*tesla;
     Bfield[2] = Bz[xint][yint]*tesla;
