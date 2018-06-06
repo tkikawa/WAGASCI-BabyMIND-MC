@@ -347,8 +347,7 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4cout << "  Module: " << vtxmod << "\n\n";
 #endif
 
-  //particleGun->SetParticlePosition(G4ThreeVector(pos[0]*cm,pos[1]*cm,pos[2]*cm));
-  particleGun->SetParticlePosition(G4ThreeVector(0,0,-0.58*m));
+  particleGun->SetParticlePosition(G4ThreeVector(pos[0]*cm,pos[1]*cm,pos[2]*cm));
   
   // Input Neut info for T2KReWeight to SK__h1 class
   runaction -> numnu = (neut->Vector).Primary.NumParticle;
