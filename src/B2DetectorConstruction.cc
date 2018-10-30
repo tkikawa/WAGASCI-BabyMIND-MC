@@ -844,18 +844,18 @@ void B2DetectorConstruction::DefineStructures()
   fdim = new B2_Dimension();
   
   //B2 box
-  B2hallX=2.15*m;
+  B2hallX=1.95*m;
   B2hallY=1.45*m;
   B2hallZ=4.0*m;
   
   //Module box
   PMboxX=75*cm;
   PMboxY=75*cm;
-  PMboxZ=26*cm;
+  PMboxZ=45*cm;
   
   WagaboxX=75*cm;
   WagaboxY=75*cm;
-  WagaboxZ=41*cm;
+  WagaboxZ=27*cm;
   
   IngboxX=75*cm;
   IngboxY=75*cm;
@@ -863,11 +863,11 @@ void B2DetectorConstruction::DefineStructures()
   
   SMRDboxX=25*cm;
   SMRDboxY=125*cm;
-  SMRDboxZ=100*cm;
+  SMRDboxZ=87*cm;
   
   BMboxX=200*cm;
   BMboxY=200*cm;
-  BMboxZ=250*cm;
+  BMboxZ=216*cm;
   
   //Iron blocks for INGRID
   iron_z= 3.25*cm;
