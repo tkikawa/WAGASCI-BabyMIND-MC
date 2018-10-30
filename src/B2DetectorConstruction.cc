@@ -794,7 +794,7 @@ void B2DetectorConstruction::DefineSpace()
   SMRDboxposY=0;
   SMRDboxposZ=-0.33*m;
 
-  BMboxposX=0.45*m;
+  BMboxposX=0.60*m;
   BMboxposY=0;
   BMboxposZ=2.75*m;
 
@@ -826,10 +826,10 @@ void B2DetectorConstruction::DefineSpace()
   PillarY = 1.5*m;
   PillarZ = 2.0*m;
 
-  PillarposX = -8.435*m+5.722*m;
+  PillarposX = -8.435*m+5.722*m+0.2*m;
   PillarposY = -4.443*m+4.444*m;
   PillarposZ = 2.631*m-4.2*m;
-  PillarposX_rev = (-8.035 + 5.0)*m+5.722*m; 
+  PillarposX_rev = (-8.035 + 5.0)*m+5.722*m-0.2*m; 
 
   SMRD_Gap = 4.3*cm;
   Start_ironx_smrd = 23.*cm;
@@ -851,11 +851,11 @@ void B2DetectorConstruction::DefineStructures()
   //Module box
   PMboxX=75*cm;
   PMboxY=75*cm;
-  PMboxZ=47*cm;
+  PMboxZ=26*cm;
   
   WagaboxX=75*cm;
   WagaboxY=75*cm;
-  WagaboxZ=47*cm;
+  WagaboxZ=41*cm;
   
   IngboxX=75*cm;
   IngboxY=75*cm;
