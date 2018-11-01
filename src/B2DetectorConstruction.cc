@@ -488,7 +488,7 @@ G4VPhysicalVolume* B2DetectorConstruction::Construct()
 	  G4cout << i << " "<<z<<G4endl;
 	}
 
-	//First plane similar to a INGRID module, will be a veto plane
+	//First plane similar to an INGRID module, will be a veto plane
 	if (i==0){
 	  for(int j=0;j<24;j++){
 	    sprintf(name,"x%d",j+k*264);
