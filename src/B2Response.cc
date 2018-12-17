@@ -197,7 +197,7 @@ void B2Response::ApplyMPPCResponse(G4double edep, G4double* pe, G4int mod)
   if(mod==0||mod==6){//Proton Module and INGRID
     npe = edep*(MeV2PE_pm);
   }
-  if(mod==1||mod==2){//WAGASCI
+  else if(mod==1||mod==2){//WAGASCI
     npe = edep*(MeV2PE_wgs);
   }
   else{//Others
@@ -212,7 +212,7 @@ void B2Response::ApplyMPPCResponse(G4double edep, G4double* pe, G4int mod)
   if(mod==0||mod==6){//Proton Module and INGRID
     npe = MPPCPixel * (1. - exp( Eff_PDE_pm * npe / MPPCPixel ));
   }
-  if(mod==1||mod==2){//WAGASCI
+  else if(mod==1||mod==2){//WAGASCI
     npe = MPPCPixel * (1. - exp( Eff_PDE_wgs * npe / MPPCPixel ));    
   }
   else{//Others
@@ -224,7 +224,7 @@ void B2Response::ApplyMPPCResponse(G4double edep, G4double* pe, G4int mod)
   if(mod==0||mod==6){//Proton Module and INGRID
     npe = npe / (1. - cross_after_rate_pm);
   }
-  if(mod==1||mod==2){//WAGASCI
+  else if(mod==1||mod==2){//WAGASCI
     npe = npe / (1. - cross_after_rate_wgs);
   }
   else{//Others
@@ -237,7 +237,7 @@ void B2Response::ApplyMPPCResponse(G4double edep, G4double* pe, G4int mod)
   if(mod==0||mod==6){//Proton Module and INGRID
     npe = gRandom->Gaus(npe,npe*PixelGainVari_pm);
   }
-  if(mod==1||mod==2){//WAGASCI
+  else if(mod==1||mod==2){//WAGASCI
     npe = gRandom->Gaus(npe,npe*PixelGainVari_wgs);
   }
   else{//Others
