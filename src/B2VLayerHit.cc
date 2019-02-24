@@ -12,6 +12,8 @@
 
 #define TopView 1  /// x-view (resolution of x-direction)
 
+using namespace CLHEP;
+
 // allocator
 G4Allocator<B2VLayerHit> B2VLayerHitAllocator;
 

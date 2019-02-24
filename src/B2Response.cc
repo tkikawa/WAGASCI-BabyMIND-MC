@@ -4,6 +4,7 @@
 #include <TRandom.h>
 
 using namespace std;
+using namespace CLHEP;
 
 const G4double scilen_pm  = 120.;  //cm
 const G4double scilen_wgs = 100.;  //cm

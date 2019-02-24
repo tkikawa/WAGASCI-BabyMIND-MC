@@ -10,6 +10,8 @@
 
 //#define DEBUG 
 
+using namespace CLHEP;
+
 /////////////////////////////////////////////////////////
 B2TrackingAction::B2TrackingAction(B2RunAction *rac,B2EventAction *evt)
   :runaction(rac)

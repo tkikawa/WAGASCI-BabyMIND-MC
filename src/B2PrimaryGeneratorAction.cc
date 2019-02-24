@@ -13,6 +13,8 @@
 #include "B2RunAction.hh"
 #include "Const.hh"
 
+using namespace CLHEP;
+
 //const double offsetpm = 120; //cm
 const double total_mass_fe = 99.54; //ton
 const double total_mass_sci = 3.74; //ton

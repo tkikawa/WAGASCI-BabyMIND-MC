@@ -29,6 +29,8 @@
 #define THRESHOLD 1.5 // p.e
 #define VETO_THRESHOLD 3.5 // p.e.
 
+using namespace CLHEP;
+
 //
 B2EventAction::B2EventAction(B2RunAction* rac)
   :runaction(rac)
@@ -314,7 +316,8 @@ void B2EventAction::EndOfEventAction(const G4Event* anEvent)
 	       
        if(trj->GetParentID()== 0) { //means particle created at neutrino interaction 
 
-         trj->DrawTrajectory(50);   
+         // trj->G4Trajectory::DrawTrajectory(50);
+  	 trj->G4Trajectory::DrawTrajectory();
        }
 
      } //end loop of n_trajecto 

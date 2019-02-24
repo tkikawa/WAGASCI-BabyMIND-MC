@@ -17,6 +17,8 @@
 
 #define THRE 0.3 // MeV
 
+using namespace CLHEP;
+
 // allocator
 G4Allocator<B2VetoHit> B2VetoHitAllocator;
 

@@ -1,8 +1,13 @@
 #include "B2MagneticField.hh"
 #include "G4MagneticField.hh"
+#include "G4UnitsTable.hh"
+#include "G4SystemOfUnits.hh"
 #include "globals.hh"
 #include <math.h>
-#include <fstream.h>
+#include <fstream>
+
+using namespace std;
+using namespace CLHEP;
 
 B2MagneticField::B2MagneticField()
 {

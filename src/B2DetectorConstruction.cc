@@ -34,6 +34,8 @@
 
 #include "Const.hh"
 
+using namespace CLHEP;
+
 B2DetectorConstruction::B2DetectorConstruction(int MODE, int WATERIN, bool MAGFLD)
 {
   mode = MODE;

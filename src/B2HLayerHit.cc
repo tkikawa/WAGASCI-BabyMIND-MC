@@ -12,6 +12,8 @@
 
 #define SideView 0 // resolution of vertical-direction
 
+using namespace CLHEP;
+
 // allocator
 G4Allocator<B2HLayerHit> B2HLayerHitAllocator;
 
