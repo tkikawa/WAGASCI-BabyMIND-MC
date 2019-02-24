@@ -2,8 +2,8 @@
 #include <stdio.h>
 
 //set fortran library 
-#include "/cern/pro/cfortran/cfortran.h"
-#include "/cern/pro/cfortran/hbook.h"
+#include "cfortran/cfortran.h"
+#include "cfortran/hbook.h"
 
 #include "Neut.hh"
 
