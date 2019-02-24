@@ -23,6 +23,10 @@ using namespace std;
 #include "B2ReconSummary.h"
 #include "B2AnaSummary.h"
 
+#ifdef __ROOTCLING__
+#pragma link C++ class B2EventSummary+;
+#endif
+
 //......................................................................
 
 class B2EventSummary : public TObject
