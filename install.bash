@@ -408,12 +408,13 @@ EOF
 		#                                                                           #
 		#############################################################################
 		
-		if [ `python --version` != "Python ${PYTHONVERS}" ]; then
-			export PATH=/opt/rh/python27/root/usr/bin:$PATH
-			export PYTHON_LIBRARY=/opt/rh/python27/root/usr/lib64
-			export PYTHON_INCLUDE_DIR=/opt/rh/python27/root/usr/include/python2.7
-			export PYTHON_EXECUTABLE=/opt/rh/python27/root/usr/bin/python2.7
-			export LD_LIBRARY_PATH=$PYTHON_LIBRARY:$LD_LIBRARY_PATH
+		if [ "`python --version`" != "Python ${PYTHONVERS}" ] ; then
+			### Install Python ###
+			PATH=/opt/rh/python27/root/usr/bin:$PATH
+			PYTHON_LIBRARY=/opt/rh/python27/root/usr/lib64
+			PYTHON_INCLUDE_DIR=/opt/rh/python27/root/usr/include/python2.7
+			PYTHON_EXECUTABLE=/opt/rh/python27/root/usr/bin/python2.7
+			LD_LIBRARY_PATH=$PYTHON_LIBRARY:$LD_LIBRARY_PATH
 			cat >> "${HOME}/.bash_profile" <<EOF
 
 # set PATH to include Python
