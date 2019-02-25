@@ -322,7 +322,7 @@ EOF
 		mkdir -p geant4-${GEANTVERS}
 		cd geant4-${GEANTVERS}-build
 		CC=/opt/rh/devtoolset-6/root/usr/bin/gcc \
-		  CXX=/opt/rh/devtoolset-6/root/usr/bin/g++ cmake \
+		  CXX=/opt/rh/devtoolset-6/root/usr/bin/g++ ${CMAKE} \
 		  -DCMAKE_INSTALL_PREFIX=../geant4-${GEANTVERS} \
 		  -DGEANT4_INSTALL_DATA=ON \
 		  -DGEANT4_BUILD_MULTITHREADED=ON \
@@ -439,13 +439,13 @@ EOF
 		git checkout -b v${ROOTVERS} v${ROOTVERS}
 		cd ../${ROOTVERS}-build
 		CC=/opt/rh/devtoolset-6/root/usr/bin/gcc \
-		  CXX=/opt/rh/devtoolset-6/root/usr/bin/g++ cmake \
+		  CXX=/opt/rh/devtoolset-6/root/usr/bin/g++ ${CMAKE} \
 		  -Dbuiltin_xrootd=ON \
 		  -DCMAKE_INSTALL_PREFIX=${ROOTDIR}/${ROOTVERS} \
 		  -DPYTHON_EXECUTABLE=/opt/rh/python27/root/usr/bin/python \
 		  ../sources
 		CC=/opt/rh/devtoolset-6/root/usr/bin/gcc \
-		  CXX=/opt/rh/devtoolset-6/root/usr/bin/g++ cmake \
+		  CXX=/opt/rh/devtoolset-6/root/usr/bin/g++ ${CMAKE} \
 		  --build . --target install -- -j56
 		cd ..
 		rm -rf ${ROOTVERS}-build
