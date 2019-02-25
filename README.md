@@ -1,6 +1,6 @@
 GEANT4 simulation code for WAGASCI+BabyMIND at J-PARC ========
 
-This is the GEANT4 Monte Calro simulation code for WAGASCI project at
+This is the GEANT4 Monte Carlo simulation code for WAGASCI project at
 J-PARC. All the detector components, WAGASCI, Proton Module, Side MRD and
 Baby-MIND, are included.
 
@@ -26,13 +26,13 @@ Only two operative systems are tested and supported:
 The reason behind this choice is that the KEKCC work server is running on
 Scientific Linux 6.10 and the few WAGASCI collaborators that will ever dare to
 install and use this software, most likely will want to run it on the KEKCC
-server. As for Ubuntu, it is the most wide-spread linux distribution so it is
-probable that some collaborator might want to test the software on its machine.
+server. As for Ubuntu, it is the most wide-spread Linux distribution and is
+useful if you want to test the software on your machine.
 
 To install the software with all its dependencies I have written a bash shell
 script called `install.bash`. Basically you just have to launch it and answer a
-couple of simple question and the script would install everything automatically.
-Anyway, the script makes a couple of assumptions behind the hoods:
+couple of simple questions and the script would install everything automatically.
+Anyway, the script makes a couple of assumptions behind the hood:
 
 - If the OS is SL6, it is assumed that we are working in a KEKCC account
 so we have no sudo access. This makes things harder but anyway the user is
@@ -41,7 +41,7 @@ relieved from any dirty work.
  system.  So it is possible to run command with sudo.
 
 To install the software first make sure that you have git installed (in Ubuntu
-`sudo apt install git`, git is already install in the KEKCC server), then issue
+`sudo apt install git`, git is already installed on the KEKCC server), then issue
 the following commands in a bash shell:
 
 ```
