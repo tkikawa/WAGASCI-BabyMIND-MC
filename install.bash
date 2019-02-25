@@ -256,13 +256,13 @@ then
 		cd ..
 		mkdir -p build
 		cd build
-		cmake -DCMAKE_INSTALL_PREFIX=/usr/local/geant4 \
-			  -DGEANT4_INSTALL_DATA=ON \
-			  -DGEANT4_BUILD_MULTITHREADED=ON \
-			  -DGEANT4_USE_OPENGL_X11=ON \
-			  -DGEANT4_USE_QT=ON \
-			  -DGEANT4_USE_SYSTEM_EXPAT=ON \
-			  ../geant4
+		${CMAKE} -DCMAKE_INSTALL_PREFIX=/usr/local/geant4 \
+				 -DGEANT4_INSTALL_DATA=ON \
+				 -DGEANT4_BUILD_MULTITHREADED=ON \
+				 -DGEANT4_USE_OPENGL_X11=ON \
+				 -DGEANT4_USE_QT=ON \
+				 -DGEANT4_USE_SYSTEM_EXPAT=ON \
+				 ../geant4
 		make -j8
 		sudo make install
 		cat >> "${HOME}/.profile" <<EOF
@@ -284,7 +284,7 @@ EOF
 		#############################################################################
 		
 		
-		if [ `cmake --version | head -n 1 | grep -Po '\d.*.*' | tail -1` != ${CMAKEVERS} ]; then
+		if [ `${CMAKE} --version | head -n 1 | grep -Po '\d.*.*' | tail -1` != ${CMAKEVERS} ]; then
 			### Install a more recent version of cmake ###
 			cd
 			wget https://cmake.org/files/LatestRelease/cmake-${CMAKEVERS}.tar.gz
@@ -329,11 +329,11 @@ EOF
 		  -DGEANT4_USE_OPENGL_X11=ON \
 		  -DGEANT4_USE_QT=ON \
 		  -DGEANT4_USE_SYSTEM_EXPAT=ON \
-		  -D
 		../geant4-sources
 		make -j56
 		make install
 		source ${HOME}/geant4-${GEANTVERS}/bin/geant4.sh
+		source ${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh
 		cat >> "${HOME}/.bash_profile" <<EOF
 # set PATH to include Geant4
 if [ -f "${HOME}/geant4-${GEANTVERS}/bin/geant4.sh" ] ; then
@@ -388,9 +388,9 @@ then
 		cd sources
 		git checkout -b v${ROOTVERS} v${ROOTVERS}
 		cd ../${ROOTVERS}-build
-		cmake -Dbuiltin_xrootd=ON -DCMAKE_INSTALL_PREFIX=${ROOTSYS}/${ROOTVERS} \
-			  ../sources
-		cmake --build . --target install -- -j8
+		${CMAKE} -Dbuiltin_xrootd=ON -DCMAKE_INSTALL_PREFIX=${ROOTSYS}/${ROOTVERS} \
+				 ../sources
+		${CMAKE} --build . --target install -- -j8
 		cd
 		source ${ROOTSYS}/${ROOTVERS}/bin/thisroot.sh
 		cat >> "${HOME}/.profile" <<EOF
