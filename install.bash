@@ -19,9 +19,10 @@ SL6="n"
 ROOTVERS="6-14-06"
 GEANTVERS="v10.5.0"
 CMAKEVERS="3.13.4"
-# GCCVERS="7.3.0"
+GCCVERS_UBUNTU="7.3.0"
 GCCVERS="6.3.1"
-# PYTHONVERS="2.7.15"
+GCCVERS_SL6="4.4.7"
+GCCREP="1"
 PYTHONVERS="2.7.13"
 CLHEPVERS="2.4.1.0"
 
@@ -48,8 +49,7 @@ then
 elif [ -f "/etc/redhat-release" ] && [ "`cat /etc/redhat-release`" == "Scientific Linux release 6.10 (Carbon)" ];
 then
     SL6="y"
-    CMAKE=cmake3
-    SL6_ROOT_FLAGS="-DENVOY_IGNORE_GLIBCXX_USE_CXX11_ABI_ERROR=1 -Wno-dev"
+    CMAKE=cmake
 else
     echo "There is something wrong about OS detection."
     echo "UBUNTU = $UBUNTU"
@@ -131,24 +131,119 @@ then
     fi
 fi
 
+#############################################################################
+#                                                                           #
+#                                 GCC COMPILER                              #
+#                                                                           #
+#############################################################################
+
+# Check for GCC
+if [ $SL6 == "y" ]; then
+	GCCVERS_DETECTED=`gcc -dumpversion`
+	if [ ${GCCVERS_DETECTED} == ${GCCVERS_UBUNTU} ] ; then
+		echo ""
+		echo "The compiler version is ${GCCVERS_DETECTED}, the same as the Ubuntu 18.04 one."
+		echo "So far so good."
+	elif [ ${GCCVERS_DETECTED} == ${GCCVERS} ] ; then
+		echo ""
+		echo "The compiler version is ${GCCVERS_DETECTED}, enough for our purposes."
+		echo "So far so good."
+	elif [ ${GCCVERS_DETECTED} == ${GCCVERS_SL6} ] ; then
+		echo ""
+		echo "The compiler version ${GCCVERS_DETECTED} is ancient, not enough to compile"
+		echo "ROOT6 or Geant4 v10.5.0: it must be updated. Choose 1 if you want to just"
+		echo "use the precompiled version ${GCCVERS} or choose 2 to compile the same"
+		echo "version as Ubuntu 18.04 ${GCCVERS_UBUNTU}. The two version are both fine"
+		echo "but to compile the latter one it takes about 3 hours."
+		echo ""
+		echo -n "[1] ${GCCVERS} (Recommended) - [2] ${GCCVERS_UBUNTU} "
+		read GCCREP
+		if [ "${GCCREP}" == "1" ];
+		then
+			export PATH=/opt/rh/devtoolset-6/root/usr/bin:$PATH
+			export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib/gcc/x86_64-redhat-linux/${GCCVERS}:$LD_LIBRARY_PATH
+			export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib64:$LD_LIBRARY_PATH
+			cat >> "${HOME}/.bash_profile" <<EOF
+# set PATH to include a more recent gcc version
+if [ -d "/opt/rh/devtoolset-6/root/usr/bin" ] ; then
+   export PATH=/opt/rh/devtoolset-6/root/usr/bin:\$PATH
+   export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib/gcc/x86_64-redhat-linux/${GCCVERS}:\$LD_LIBRARY_PATH
+   export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib64:\$LD_LIBRARY_PATH
+fi
+EOF
+		elif [ "${GCCREP}" == "2" ];
+		then
+			cd
+			wget https://ftp.gnu.org/gnu/gcc/gcc-${GCCVERS}/gcc-${GCCVERS}.tar.gz
+			tar xzf gcc-${GCCVERS}.tar.gz
+			mv -f gcc-${GCCVERS} gcc-${GCCVERS}-sources
+			cd gcc-${GCCVERS}-sources
+			wget https://gmplib.org/download/gmp/gmp-6.1.0.tar.bz2
+			wget https://www.mpfr.org/mpfr-3.1.4/mpfr-3.1.4.tar.bz2
+			wget https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz
+			wget http://isl.gforge.inria.fr/isl-0.16.1.tar.bz2
+			./contrib/download_prerequisites
+			cd ..
+			mkdir -p objdir
+			mkdir -p gcc-${GCCVERS}
+			cd objdir
+			$PWD/../gcc-${GCCVERS}-sources/configure --prefix=$HOME/gcc-${GCCVERS} --enable-languages=c,c++,fortran,go
+			make -j56
+			make install
+			export PATH=${HOME}/gcc-${GCCVERS}/bin:$PATH
+			export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib:$LD_LIBRARY_PATH
+			export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:$LD_LIBRARY_PATH
+			hash -r
+			cat >> "${HOME}/.bash_profile" <<EOF
+# set PATH to include a more recent gcc version
+if [ -d "${HOME}/gcc-${GCCVERS}/bin" ] ; then
+   export PATH=${HOME}/gcc-${GCCVERS}/bin:\$PATH
+   export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib:\$LD_LIBRARY_PATH
+   export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:\$LD_LIBRARY_PATH
+fi
+EOF
+			cd && rm -rf gcc-${GCCVERS}-sources objdir
+		else
+			echo "I didn't understand your answer. Sorry, try again."
+			exit 1
+		fi
+	else
+		echo "The detected GCC version ${GCCVERS_DETECTED} not recognized."
+		echo "If this version is C++11 compatible (>= 4.8.1) it is probably fine."
+		echo "Otherwise you need to upgrade to a C++11 compatible version, but it"
+		echo "is difficult to say without testing. If you want to upgrade GCC with"
+		echo "this script just set the GCCVERS_SL6=${GCCVERS_DETECTED} variable at"
+		echo "the beginning of the script and re-run it."
+		echo ""
+		echo -n "Do you want this installer to continue anyway? (y|n) : "
+		read CONTINUE
+		if [ "${CONTINUE}" == "n" ];
+		then
+			exit 1
+		else
+			CONTINUE = "" 
+		fi
+	fi
+fi
+
 echo ""
 echo ""
 
 #install Geant4 if necessary
 if [ "${GEANTREP}" == "y" ];
 then
-    echo ""
-    echo "-------------------"
-    echo "Geant4 INSTALLATION"
-    echo "-------------------"
+	echo ""
+	echo "-------------------"
+	echo "Geant4 INSTALLATION"
+	echo "-------------------"
 
-    if [ $UBUNTU == "y" ];
-    then
+	if [ $UBUNTU == "y" ];
+	then
 
 		#############################################################################
-        #                                                                           #
-        #                                 GEANT 4 (UBUNTU)                          #
-        #                                                                           #
+		#                                                                           #
+		#                                 GEANT 4 (UBUNTU)                          #
+		#                                                                           #
 		#############################################################################
 		
 		cd
@@ -177,70 +272,15 @@ if [ -f "/usr/local/geant4/bin/geant4.sh" ] ; then
    source /usr/local/geant4/bin/geant4.sh
 fi
 EOF
-	
-	elif [ $SL6 == "y" ];
-    then
-
-		#############################################################################
-        #                                                                           #
-        #                                 GCC COMPILER                              #
-        #                                                                           #
-		#############################################################################
 		
-		### Install a more recent version of gcc ###
-		if [ `gcc --version | head -n 1 | grep -Po '\d.\d.\d' | tail -1` != ${GCCVERS} ]; then
-						cat >> "${HOME}/.bash_profile" <<EOF
-# set PATH to include a more recent gcc version
-if [ -d "/opt/rh/devtoolset-6/root/usr/bin" ] ; then
-   export PATH=/opt/rh/devtoolset-6/root/usr/bin:\$PATH
-   export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib/gcc/x86_64-redhat-linux/${GCCVERS}:\$LD_LIBRARY_PATH
-   export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib64:\$LD_LIBRARY_PATH
-fi
-EOF
+	elif [ $SL6 == "y" ];
+	then
 
-# 			cd
-# 			wget https://ftp.gnu.org/gnu/gcc/gcc-${GCCVERS}/gcc-${GCCVERS}.tar.gz
-# 			tar xzf gcc-${GCCVERS}.tar.gz
-# 			mv -f gcc-${GCCVERS} gcc-${GCCVERS}-sources
-# 			cd gcc-${GCCVERS}-sources
-# 			# it may be necessary to download these archives manually and scp them
-# 			# the versions depend on the gcc version so be careful
-# 			# wget ftp://gcc.gnu.org/pub/gcc/infrastructure/gmp-6.1.0.tar.bz2
-# 			# wget ftp://gcc.gnu.org/pub/gcc/infrastructure/mpfr-3.1.4.tar.bz2
-# 			# wget ftp://gcc.gnu.org/pub/gcc/infrastructure/mpc-1.0.3.tar.gz
-# 			# wget ftp://gcc.gnu.org/pub/gcc/infrastructure/isl-0.16.1.tar.bz2
-# 			# scp gmp-6.1.0.tar.bz2 mpc-1.0.3.tar.gz mpfr-3.1.4.tar.bz2 isl-0.16.1.tar.bz2 kekcc:<path/to/user/home/folder>
-# 			wget https://gmplib.org/download/gmp/gmp-6.1.0.tar.bz2
-# 			wget https://www.mpfr.org/mpfr-3.1.4/mpfr-3.1.4.tar.bz2
-# 			wget https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz
-# 			wget http://isl.gforge.inria.fr/isl-0.16.1.tar.bz2
-# 			./contrib/download_prerequisites
-# 			cd ..
-# 			mkdir -p objdir
-# 			mkdir -p gcc-${GCCVERS}
-# 			cd objdir
-# 			$PWD/../gcc-${GCCVERS}-sources/configure --prefix=$HOME/gcc-${GCCVERS} --enable-languages=c,c++,fortran,go
-# 			make -j56
-# 			make install
-# 			export PATH=${HOME}/gcc-${GCCVERS}/bin:$PATH
-# 			export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib:$LD_LIBRARY_PATH
-# 			export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:$LD_LIBRARY_PATH
-# 			hash -r
-# 			cat >> "${HOME}/.bash_profile" <<EOF
-# # set PATH to include a more recent gcc version
-# if [ -d "${HOME}/gcc-${GCCVERS}/bin" ] ; then
-#    export PATH=${HOME}/gcc-${GCCVERS}/bin:\$PATH
-#    export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib:\$LD_LIBRARY_PATH
-#    export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:\$LD_LIBRARY_PATH
-# fi
-# EOF
-			# cd && rm -rf gcc-${GCCVERS}-sources objdir
-		fi
 
 		#############################################################################
-        #                                                                           #
-        #                                 CMAKE 3                                   #
-        #                                                                           #
+		#                                                                           #
+		#                                 CMAKE 3                                   #
+		#                                                                           #
 		#############################################################################
 		
 		
@@ -267,32 +307,12 @@ EOF
 		fi
 
 		#############################################################################
-        #                                                                           #
-        #                                  CLHEP (SL6)                              #
-        #                                                                           #
-		#############################################################################
-
-		# wget http://proj-clhep.web.cern.ch/proj-clhep/DISTRIBUTION/tarFiles/clhep-${CLHEPVERS}.tgz
-		# tar -zxf clhep-${CLHEPVERS}.tgz
-		# mv -f ${CLHEPVERS} clhep-${CLHEPVERS}-sources
-		# mkdir -p clhep-${CLHEPVERS}
-		# mkdir -p clhep-${CLHEPVERS}-build
-		# cd clhep-${CLHEPVERS}-build
-		# CC=/opt/rh/devtoolset-6/root/usr/bin/gcc \
-		#   CXX=/opt/rh/devtoolset-6/root/usr/bin/g++ cmake \
-		#   -DCMAKE_INSTALL_PREFIX=${HOME}/clhep-${CLHEPVERS} \
-		#   ${HOME}/clhep-${CLHEPVERS}-sources/CLHEP
-		# make -j56
-		# make install
-		# cd && rm -rf clhep-${CLHEPVERS}-sources clhep-${CLHEPVERS}-build clhep-${CLHEPVERS}.tgz
-
-		#############################################################################
-        #                                                                           #
-        #                                 GEANT 4 (SL6)                             #
-        #                                                                           #
+		#                                                                           #
+		#                                 GEANT 4 (SL6)                             #
+		#                                                                           #
 		#############################################################################
 		
-	    ### Install Geant4 ###
+		### Install Geant4 ###
 		cd
 		git clone https://github.com/Geant4/geant4.git geant4-sources
 		cd geant4-sources
@@ -310,7 +330,7 @@ EOF
 		  -DGEANT4_USE_QT=ON \
 		  -DGEANT4_USE_SYSTEM_EXPAT=ON \
 		  -D
-		  ../geant4-sources
+		../geant4-sources
 		make -j56
 		make install
 		source ${HOME}/geant4-${GEANTVERS}/bin/geant4.sh
@@ -328,19 +348,19 @@ fi
 #install root if necessary
 if [ "${ROOTREP}" == "y" ];
 then
-    echo ""
-    echo "-------------------"
-    echo "ROOT INSTALLATION"
-    echo "-------------------"
+	echo ""
+	echo "-------------------"
+	echo "ROOT INSTALLATION"
+	echo "-------------------"
 
 	#############################################################################
-    #                                                                           #
-    #                                 ROOT (UBUNTU)                             #
-    #                                                                           #
+	#                                                                           #
+	#                                 ROOT (UBUNTU)                             #
+	#                                                                           #
 	#############################################################################
 	
-    if [ $UBUNTU == "y" ];
-    then
+	if [ $UBUNTU == "y" ];
+	then
 		ROOTDIR=${HOME}
 		if [ -d "${ROOTDIR}/ROOT" ];
 		then rm -rf "${ROOTDIR}/ROOT"; fi
@@ -380,13 +400,13 @@ if [ -f "${ROOTSYS}/${ROOTVERS}/bin/thisroot.sh" ] ; then
    source ${ROOTSYS}/${ROOTVERS}/bin/thisroot.sh
 fi
 EOF
-    elif [ $SL6 == "y" ];
-    then
+	elif [ $SL6 == "y" ];
+	then
 
 		#############################################################################
-        #                                                                           #
-        #                                 PYTHON 2.7                                #
-        #                                                                           #
+		#                                                                           #
+		#                                 PYTHON 2.7                                #
+		#                                                                           #
 		#############################################################################
 		
 		if [ `python --version` != "Python ${PYTHONVERS}" ]; then
@@ -402,31 +422,12 @@ if [ -d "/opt/rh/python27/root/usr/bin" ] ; then
    export LD_LIBRARY_PATH=$PYTHON_LIBRARY:\$LD_LIBRARY_PATH
 fi
 EOF
-			# cd
-			# if [ ! -f Python-${PYTHONVERS}.tar.xz ] ; then
-			# 	wget https://www.python.org/ftp/python/${PYTHONVERS}/Python-${PYTHONVERS}.tar.xz
-			# fi
-			# tar -xf Python-${PYTHONVERS}.tar.xz
-			# mv -f Python-${PYTHONVERS} Python-${PYTHONVERS}-sources
-			# mkdir -p Python-${PYTHONVERS}
-			# cd Python-${PYTHONVERS}-sources
-			# ./configure prefix=${HOME}/Python-${PYTHONVERS} --enable-shared --enable-optimizations
-			# make -j56 EXTRATESTOPTS=--list-tests
-			# make install
-# 			cat >> "${HOME}/.bash_profile" <<EOF
-
-# # set PATH to include Python
-# if [ -d "${HOME}/Python-${PYTHONVERS}/bin" ] ; then
-#    export PATH=${HOME}/Python-${PYTHONVERS}/bin:\$PATH
-# fi
-# EOF
-			# cd && rm -rf Python-${PYTHONVERS}-sources Python-${PYTHONVERS}.tar.xz
 		fi
 
 		#############################################################################
-        #                                                                           #
-        #                                 ROOT (SL6)                                #
-        #                                                                           #
+		#                                                                           #
+		#                                 ROOT (SL6)                                #
+		#                                                                           #
 		#############################################################################
 		
 		# Download and install ROOT
@@ -462,8 +463,8 @@ fi
 
 # ROOT detection
 if [ -z ${ROOTSYS} ]; then
-   echo "Couldn't detect ROOT installation."
-   echo "Perhaps you forgot to source the thisroot.sh script."
+	echo "Couldn't detect ROOT installation."
+	echo "Perhaps you forgot to source the thisroot.sh script."
 fi
 
 #############################################################################
