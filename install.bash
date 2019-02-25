@@ -469,18 +469,26 @@ fi
 
 #############################################################################
 #                                                                           #
-#                               CERNLIB 2006 (SL6)                          #
+#                               CERNLIB 2006                                #
 #                                                                           #
 #############################################################################
 
-if [ ! -d ${HOME}/cernlib-2006 ] ; then
+if [ $SL6 == "y" ] ; then
+	if [ ! -d ${HOME}/cernlib-2006 ] ; then
+		# In the KEKCC server CERNLIB 2006 is installed system-wide in the /cern/pro
+		# folder but it is compiled with GCC 3 making the binaries not compatible with
+		# modern software. So the need to download more recent binaries ...
+		cd
+		mkdir -p cernlib-2006
+		cd cernlib-2006
+		wget https://rpmfind.net/linux/epel/6/x86_64/Packages/c/cernlib-g77-static-2006-34.el6.x86_64.rpm
+		rpm2cpio cernlib-g77-static-2006-34.el6.x86_64.rpm  | cpio -idmv
+		mv -f ./usr/lib64/cernlib/2006-g77/lib/* ./
+		rm -rf usr cernlib-g77-static-2006-34.el6.x86_64.rpm
+	fi
+elif [ $UBUNTU == "y" ] ; then
 	cd
-	mkdir -p cernlib-2006
-	cd cernlib-2006
-	wget https://rpmfind.net/linux/epel/6/x86_64/Packages/c/cernlib-g77-static-2006-34.el6.x86_64.rpm
-	rpm2cpio cernlib-g77-static-2006-34.el6.x86_64.rpm  | cpio -idmv
-	mv -f ./usr/lib64/cernlib/2006-g77/lib/* ./
-	rm -rf usr cernlib-g77-static-2006-34.el6.x86_64.rpm
+	sudo apt install cernlib
 fi
 
 echo ""
