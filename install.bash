@@ -364,12 +364,7 @@ then
 	
 	if [ $UBUNTU == "y" ];
 	then
-		ROOTDIR=${HOME}
-		if [ -d "${ROOTDIR}/ROOT" ];
-		then rm -rf "${ROOTDIR}/ROOT"; fi
-		mkdir -p "${ROOTDIR}/ROOT"
-		ROOTSYS="${ROOTDIR}/ROOT"
-
+		ROOTDIR="${HOME}/ROOT"
 		sudo apt-get update
 		sudo apt-get upgrade
 		sudo apt-get install -y build-essential git dpkg-dev cmake xutils-dev \
@@ -385,24 +380,25 @@ then
 			 libpythia8-dev davix-dev srm-ifce-dev libtbb-dev python-numpy
 		cd
 		# Download and install ROOT
-		mkdir -p ${ROOTSYS}/{sources,${ROOTVERS},${ROOTVERS}-build}
-		cd ${ROOTSYS}
+		mkdir -p ${ROOTDIR}/{sources,${ROOTVERS},${ROOTVERS}-build}
+		cd ${ROOTDIR}
 		git clone http://github.com/root-project/root.git sources
 		cd sources
 		git checkout -b v${ROOTVERS} v${ROOTVERS}
 		cd ../${ROOTVERS}-build
-		${CMAKE} -Dbuiltin_xrootd=ON -DCMAKE_INSTALL_PREFIX=${ROOTSYS}/${ROOTVERS} \
+		${CMAKE} -Dbuiltin_xrootd=ON -DCMAKE_INSTALL_PREFIX=${ROOTDIR}/${ROOTVERS} \
 				 ../sources
 		${CMAKE} --build . --target install -- -j8
 		cd
-		source ${ROOTSYS}/${ROOTVERS}/bin/thisroot.sh
+		source ${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh
 		cat >> "${HOME}/.profile" <<EOF
 
 # set PATH to include ROOT
-if [ -f "${ROOTSYS}/${ROOTVERS}/bin/thisroot.sh" ] ; then
-   source ${ROOTSYS}/${ROOTVERS}/bin/thisroot.sh
+if [ -f "${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh" ] ; then
+   source ${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh
 fi
 EOF
+		rm -rf ${ROOTDIR}/${ROOTVERS}-build
 	elif [ $SL6 == "y" ];
 	then
 
