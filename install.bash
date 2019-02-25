@@ -464,6 +464,16 @@ fi
 if [ -z ${ROOTSYS} ]; then
 	echo "Couldn't detect ROOT installation."
 	echo "Perhaps you forgot to source the thisroot.sh script."
+else
+	source ${ROOTSYS}/bin/thisroot.sh
+fi
+
+# GEANT4 detection
+if [ -z ${G4INSTALL} ]; then
+	echo "Couldn't detect Geant4 installation."
+	echo "Perhaps you forgot to source the geant4make.sh script."
+else
+	source ${G4INSTALL}/geant4make.sh
 fi
 
 #############################################################################
