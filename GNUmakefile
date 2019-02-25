@@ -37,9 +37,16 @@ G4TARGET := $(name)
 G4EXLIB := true
 
 .PHONY: all
-all: bin
+all: lib bin B2MC
 
 include $(G4INSTALL)/config/binmake.gmk
+
+clean::
+	rm -f B2MC
+	$(MAKE) clean -C lib
+
+lib:
+	$(MAKE) -C lib
 
 LDFLAGS += $(CERNLIB) 
 
