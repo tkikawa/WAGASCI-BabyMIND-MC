@@ -52,8 +52,15 @@ chmod a+x install.bash
 ./install.bash
 ```
 
-Disclaimer: consider that the script is still work in progress. You may (or may
-not) need to adjust a few variables to reflect your particular needs.
+Disclaimer: consider that the installation script is still work in progress. You
+may (or may not) need to adjust a few variables to reflect your particular
+needs.
+
+### KEKCC
+
+For further info about how to create an account and use the KEKCC cloud
+computing servers, refer to the [WAGASCI
+wiki](https://www-he.scphys.kyoto-u.ac.jp/research/Neutrino/WAGASCI/wiki/dokuwiki/doku.php?id=components:kekcc).
 
 ## Run the simulation
 
