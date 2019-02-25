@@ -508,3 +508,22 @@ ln -s /usr/lib64/libg2c.so.0.0.0 lib/libg2c.so
 make
 make B2MC
 LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:$LD_LIBRARY_PATH ./B2MC --help
+
+echo ""
+echo "Installation successfully completed!"
+echo "For any questions about this script please contact:"
+echo "Pintaudi Giorgio (PhD Student)"
+echo "Yokohama National University"
+echo "giorgio-pintaudi-kx@ynu.jp"
+echo ""
+
+exit 0
+
+# install.bash
+#
+# Copyright (C) 2018 by Pintaudi Giorgio <giorgio-pintaudi-kx@ynu.jp>
+# Released under the GPLv3 license
+#
+#     Pintaudi Giorgio (PhD Student)
+#     Yokohama National University
+#     giorgio-pintaudi-kx@ynu.jp
