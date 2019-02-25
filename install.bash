@@ -250,11 +250,11 @@ then
 		sudo apt-get update
 		sudo apt-get upgrade
 		sudo apt-get install -y git build-essential libexpat1-dev libxmu-dev cmake cmake-curses-gui qt5-default
-		git clone https://github.com/Geant4/geant4.git geant4
-		cd geant4
+		git clone https://github.com/Geant4/geant4.git geant4-sources
+		cd geant4-sources
 		git checkout ${GEANTVERS}
 		cd ..
-		mkdir -p build
+		mkdir -p geant4-${GEANTVERS}-build
 		cd build
 		${CMAKE} -DCMAKE_INSTALL_PREFIX=/usr/local/geant4 \
 				 -DGEANT4_INSTALL_DATA=ON \
@@ -262,17 +262,20 @@ then
 				 -DGEANT4_USE_OPENGL_X11=ON \
 				 -DGEANT4_USE_QT=ON \
 				 -DGEANT4_USE_SYSTEM_EXPAT=ON \
-				 ../geant4
+				 ../geant4-sources
 		make -j8
 		sudo make install
+		source /usr/local/geant4/bin/geant4.sh
+		source /usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh
 		cat >> "${HOME}/.profile" <<EOF
 
 # set PATH to include Geant4
 if [ -f "/usr/local/geant4/bin/geant4.sh" ] ; then
    source /usr/local/geant4/bin/geant4.sh
+   source /usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh
 fi
 EOF
-		
+		cd && rm -rf geant4-${GEANTVERS}-build
 	elif [ $SL6 == "y" ];
 	then
 
