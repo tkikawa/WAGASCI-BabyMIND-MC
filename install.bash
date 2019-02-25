@@ -502,20 +502,32 @@ echo "-------------------"
 #                                                                           #
 #############################################################################
 
-cd
-rm -rf WAGASCI-BabyMIND-MC
-git clone https://github.com/tkikawa/WAGASCI-BabyMIND-MC.git
-cd WAGASCI-BabyMIND-MC\lib
-CC=/opt/rh/devtoolset-6/root/usr/bin/gcc \
-  CXX=/opt/rh/devtoolset-6/root/usr/bin/g++ \
-  LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib:$LD_LIBRARY_PATH \
-  LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:$LD_LIBRARY_PATH \
-  make
-cd ..
-ln -s /usr/lib64/libg2c.so.0.0.0 lib/libg2c.so
-make
-make B2MC
-LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:$LD_LIBRARY_PATH ./B2MC --help
+if [ $SL6 == "y" ] ; then
+	cd
+	rm -rf WAGASCI-BabyMIND-MC
+	git clone https://github.com/tkikawa/WAGASCI-BabyMIND-MC.git
+	cd WAGASCI-BabyMIND-MC\lib
+	CC=/opt/rh/devtoolset-6/root/usr/bin/gcc \
+	  CXX=/opt/rh/devtoolset-6/root/usr/bin/g++ \
+	  LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib:$LD_LIBRARY_PATH \
+	  LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:$LD_LIBRARY_PATH \
+	  make
+	cd ..
+	ln -s /usr/lib64/libg2c.so.0.0.0 lib/libg2c.so
+	make
+	make B2MC
+	LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:$LD_LIBRARY_PATH ./B2MC --help
+elif [ $UBUNTU == "y" ] ; then
+	cd
+	rm -rf WAGASCI-BabyMIND-MC
+	git clone https://github.com/tkikawa/WAGASCI-BabyMIND-MC.git
+	cd WAGASCI-BabyMIND-MC\lib
+	make
+	cd ..
+	make
+	make B2MC
+	./B2MC --help
+fi
 
 echo ""
 echo "Installation successfully completed!"
