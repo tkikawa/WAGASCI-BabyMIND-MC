@@ -281,13 +281,11 @@ then
 				 ../geant4-sources
 		make -j8
 		sudo make install
-		source /usr/local/geant4/bin/geant4.sh
 		source /usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh
 		cat >> "${HOME}/.profile" <<EOF
 
 # set PATH to include Geant4
 if [ -f "/usr/local/geant4/bin/geant4.sh" ] ; then
-   source /usr/local/geant4/bin/geant4.sh
    source /usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh
 fi
 EOF
@@ -350,12 +348,10 @@ EOF
 		../geant4-sources
 		make -j56
 		make install
-		source ${HOME}/geant4-${GEANTVERS}/bin/geant4.sh
 		source ${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh
 		cat >> "${HOME}/.bash_profile" <<EOF
 # set PATH to include Geant4
 if [ -f "${HOME}/geant4-${GEANTVERS}/bin/geant4.sh" ] ; then
-   source ${HOME}/geant4-${GEANTVERS}/bin/geant4.sh
    source ${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh
 fi
 EOF
