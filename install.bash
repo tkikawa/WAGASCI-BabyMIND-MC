@@ -497,21 +497,68 @@ fi
 #############################################################################
 
 if [ $SL6 == "y" ] ; then
-	if [ ! -d ${HOME}/cernlib-2006 ] ; then
-		# In the KEKCC server CERNLIB 2006 is installed system-wide in the /cern/pro
-		# folder but it is compiled with GCC 3 making the binaries not compatible with
-		# modern software. So the need to download more recent binaries ...
-		cd
-		mkdir -p cernlib-2006
-		cd cernlib-2006
-		wget https://rpmfind.net/linux/epel/6/x86_64/Packages/c/cernlib-g77-static-2006-34.el6.x86_64.rpm
-		rpm2cpio cernlib-g77-static-2006-34.el6.x86_64.rpm  | cpio -idmv
-		mv -f ./usr/lib64/cernlib/2006-g77/lib/* ./
-		rm -rf usr cernlib-g77-static-2006-34.el6.x86_64.rpm
+	if [ -z "${CERN}" ] ; then
+		export CERN=/home/t2k/tatsuya1/cern/cernlib
+		export CERN_LEVEL=2006
+		export CERN_ROOT=${CERN}/${CERN_LEVEL}
+		export PATH=${CERN_ROOT}/bin:${PATH}
+		export LD_LIBRARY_PATH=${CERN_ROOT}/lib:${LD_LIBRARY_PATH}
+		cat >> "${HOME}/.bash_profile" <<EOF
+
+set PATH to include CERNLIB
+if [ -d "/home/t2k/tatsuya1/cern/cernlib" ] ; then
+	export CERN=/home/t2k/tatsuya1/cern/cernlib
+	export CERN_LEVEL=2006
+	export CERN_ROOT=\${CERN}/\${CERN_LEVEL}
+	export PATH=\${CERN_ROOT}/bin:\${PATH}
+	export LD_LIBRARY_PATH=\${CERN_ROOT}/lib:\${LD_LIBRARY_PATH}
+fi
+EOF
 	fi
 elif [ $UBUNTU == "y" ] ; then
+	# CERNLIB
 	cd
-	sudo apt install -y cernlib
+	wget http://www-zeuthen.desy.de/linear_collider/cernlib/new/cernlib-20061220+dfsg3.patches.2019.02.03.txt
+	sudo apt install -y devscripts
+	rm -rf cernlib_debuild
+	mkdir cernlib_debuild
+	cd cernlib_debuild
+	sudo apt-get build-dep -y cernlib
+	apt-get source cernlib
+	cd cernlib-20061220*
+	patch -p1 < ../../cernlib-20061220+dfsg3.patches.2019.02.03.txt
+	debuild -us -uc # > ../debuild_us_uc.cernlib.out.txt 2>&1
+	cd ..
+	rm -f cernlib-extras_*.deb pawserv_*.deb zftp_*.deb
+	sudo dpkg -i *.deb
+	sudo apt-get -y purge cernlib cernlib-core cernlib-core-dev
+	# LIBPAW
+	sudo apt-get build-dep paw
+	apt-get source paw
+	cd paw-2.14.04*
+	debuild -us -uc # > ../debuild_us_uc.paw.out.txt 2>&1
+	cd ..
+	sudo dpkg -i *.deb
+	sudo apt-get -y purge cernlib
+	# CERNLIB Monte Carlo
+	sudo apt-get build-dep cernlib-montecarlo
+	apt-get source cernlib-montecarlo
+	cd mclibs-20061220*
+	debuild -us -uc # > ../debuild_us_uc.mclibs.out.txt 2>&1
+	cd ..
+	sudo dpkg -i *.deb
+	sudo apt-get -y purge cernlib
+	sudo apt-get build-dep geant321
+	# Geant321
+	apt-get source geant321
+	cd geant321-3.21.14*
+	debuild -us -uc # > ../debuild_us_uc.geant321.out.txt 2>&1
+	cd ..
+	sudo dpkg -i *.deb
+	# Do not "update" the installed libraries
+	sudo apt-mark hold `ls -1 *.deb | sed -e '{s/_.*\.deb//}'`
+	cd .. && rm -rf cernlib_debuild
+	export CERN_ROOT=
 fi
 
 #############################################################################
