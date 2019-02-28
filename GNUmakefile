@@ -2,20 +2,29 @@
 CPPFLAGS += -Df2cFortran
 
 ### CERNLIB
-CERN_ROOT = /cern/pro
+ifeq ($(CERN_ROOT),)
+CERN_ROOT := CERN_ROOT=$(USER)/cernlib-2006
+endif
 CERNINC = $(CERN_ROOT)/include
-CERNLIB = -L$(USER)/cernlib-2006
-CERNLIBS = -lmathlib -lpacklib -lgraflib -lgrafX11 -lpacklib -lkernlib -lmathlib
+CERNLIB = -L$(CERN_ROOT)/lib
+CERNLIBS = -lmathlib -lpacklib -lgraflib -lgrafX11 -lkernlib -lgfortran
 CPPFLAGS += -I$(CERNINC)
-EXTRALIBS += $(CERNLIBS) $(shell geant4-config --libs) -L./lib
+EXTRALIBS += $(CERNLIBS)
 
 ### GEANT4
 CPPFLAGS += $(shell geant4-config --cflags)
+EXTRALIBS += $(shell geant4-config --libs)
 G4WORKDIR = .
 
 ### OTHER LIBS
-# EXTRALIBS += -L$(USER)/gcc-7.3.0/lib64 -lg2c -lm
-EXTRALIBS += -L/opt/rh/devtoolset-6/root/usr/lib/gcc/x86_64-redhat-linux/6.3.1 -lg2c -lm
+GCCVERSION := $(shell gcc --version | grep ^gcc | sed 's/^.* //g')
+ifeq "$(GCCVERSION)" "7.3.0"
+	EXTRALIBS += -L./lib -L$(USER)/gcc-7.3.0/lib64 -lg2c -lm
+else ifeq "$(GCCVERSION)" "6.3.1"
+	EXTRALIBS +=  -L./lib -L/opt/rh/devtoolset-6/root/usr/lib/gcc/x86_64-redhat-linux/6.3.1 -lg2c -lm
+else
+	$(warning GCC version not recognized )
+endif
 
 ### MY INCS
 DATALIBDIR = $(G4WORKDIR)/lib
@@ -48,7 +57,7 @@ clean::
 lib:
 	$(MAKE) -C lib
 
-LDFLAGS += $(CERNLIB) 
+LDFLAGS += $(CERNLIB)
 
 CXXFLAGS_WITHOUT_O := $(filter-out -O% , $(CXXFLAGS)) 
 CXXFLAGS_WITHOUT_O := $(filter-out +O% , $(CXXFLAGS_WITHOUT_O))
