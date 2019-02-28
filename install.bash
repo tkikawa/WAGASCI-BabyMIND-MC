@@ -144,10 +144,20 @@ if [ $SL6 == "y" ]; then
 		echo ""
 		echo "The compiler version is ${GCCVERS_DETECTED}, the same as the Ubuntu 18.04 one."
 		echo "So far so good."
+		export CC=${HOME}/gcc-${GCCVERS_DETECTED}/bin/gcc
+		export CXX=${HOME}/gcc-${GCCVERS_DETECTED}/bin/g++
+		export GCCVERS=${GCCVERS_DETECTED}
+		export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib:$LD_LIBRARY_PATH
+		export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:$LD_LIBRARY_PATH
 	elif [ ${GCCVERS_DETECTED} == ${GCCVERS} ] ; then
 		echo ""
 		echo "The compiler version is ${GCCVERS_DETECTED}, enough for our purposes."
 		echo "So far so good."
+		export CC=/opt/rh/devtoolset-6/root/usr/bin/gcc
+		export CXX=/opt/rh/devtoolset-6/root/usr/bin/g++
+		export GCCVERS=${GCCVERS_DETECTED}
+		export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib/gcc/x86_64-redhat-linux/${GCCVERS}:$LD_LIBRARY_PATH
+		export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib64:$LD_LIBRARY_PATH
 	elif [ ${GCCVERS_DETECTED} == ${GCCVERS_SL6} ] ; then
 		echo ""
 		echo "The compiler version ${GCCVERS_DETECTED} is ancient, not enough to compile"
@@ -163,7 +173,10 @@ if [ $SL6 == "y" ]; then
 			export PATH=/opt/rh/devtoolset-6/root/usr/bin:$PATH
 			export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib/gcc/x86_64-redhat-linux/${GCCVERS}:$LD_LIBRARY_PATH
 			export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib64:$LD_LIBRARY_PATH
+			export CC=/opt/rh/devtoolset-6/root/usr/bin/gcc
+			export CXX=/opt/rh/devtoolset-6/root/usr/bin/g++
 			cat >> "${HOME}/.bash_profile" <<EOF
+
 # set PATH to include a more recent gcc version
 if [ -d "/opt/rh/devtoolset-6/root/usr/bin" ] ; then
    export PATH=/opt/rh/devtoolset-6/root/usr/bin:\$PATH
@@ -193,8 +206,11 @@ EOF
 			export PATH=${HOME}/gcc-${GCCVERS}/bin:$PATH
 			export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib:$LD_LIBRARY_PATH
 			export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:$LD_LIBRARY_PATH
+			export CC=${HOME}/gcc-${GCCVERS_DETECTED}/bin/gcc
+			export CXX=${HOME}/gcc-${GCCVERS_DETECTED}/bin/g++
 			hash -r
 			cat >> "${HOME}/.bash_profile" <<EOF
+
 # set PATH to include a more recent gcc version
 if [ -d "${HOME}/gcc-${GCCVERS}/bin" ] ; then
    export PATH=${HOME}/gcc-${GCCVERS}/bin:\$PATH
@@ -324,8 +340,7 @@ EOF
 		mkdir -p geant4-${GEANTVERS}-build
 		mkdir -p geant4-${GEANTVERS}
 		cd geant4-${GEANTVERS}-build
-		CC=/opt/rh/devtoolset-6/root/usr/bin/gcc \
-		  CXX=/opt/rh/devtoolset-6/root/usr/bin/g++ ${CMAKE} \
+		CC=$(CC) CXX=$(CXX) ${CMAKE} \
 		  -DCMAKE_INSTALL_PREFIX=../geant4-${GEANTVERS} \
 		  -DGEANT4_INSTALL_DATA=ON \
 		  -DGEANT4_BUILD_MULTITHREADED=ON \
@@ -442,14 +457,12 @@ EOF
 		cd sources
 		git checkout -b v${ROOTVERS} v${ROOTVERS}
 		cd ../${ROOTVERS}-build
-		CC=/opt/rh/devtoolset-6/root/usr/bin/gcc \
-		  CXX=/opt/rh/devtoolset-6/root/usr/bin/g++ ${CMAKE} \
+		CC=$(CC) CXX=$(CXX) ${CMAKE} \
 		  -Dbuiltin_xrootd=ON \
 		  -DCMAKE_INSTALL_PREFIX=${ROOTDIR}/${ROOTVERS} \
 		  -DPYTHON_EXECUTABLE=/opt/rh/python27/root/usr/bin/python \
 		  ../sources
-		CC=/opt/rh/devtoolset-6/root/usr/bin/gcc \
-		  CXX=/opt/rh/devtoolset-6/root/usr/bin/g++ ${CMAKE} \
+		CC=$(CC) CXX=$(CXX) ${CMAKE} \
 		  --build . --target install -- -j56
 		cd ..
 		rm -rf ${ROOTVERS}-build
@@ -523,12 +536,12 @@ deb-src [trusted=yes] http://old-releases.ubuntu.com/ubuntu/ hardy-updates unive
 END
 		sudo apt-get update && sudo apt-get install -y g77
 		sudo ln -s /usr/lib/gcc/x86_64-linux-gnu/7/libgcc_s.so /usr/lib/x86_64-linux-gnu/
-		export LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:\$LIBRARY_PATH"
+		export LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
 		tee -a $HOME/.profile << END
-# set LIBRARY_PATH so it includes x86_64-linux-gnu if it exists
+# set LD_LIBRARY_PATH so it includes x86_64-linux-gnu if it exists
 if [ -d "/usr/lib/x86_64-linux-gnu" ] ; then
-LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:\$LIBRARY_PATH"
-export LIBRARY_PATH
+LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:\$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH
 fi
 END
 	fi
@@ -548,12 +561,12 @@ echo "-------------------"
 if [ $SL6 == "y" ] ; then
 	cd
 	cd WAGASCI-BabyMIND-MC
-	CC=/opt/rh/devtoolset-6/root/usr/bin/gcc \
-	  CXX=/opt/rh/devtoolset-6/root/usr/bin/g++ \
-	  LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib:$LD_LIBRARY_PATH \
-	  LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:$LD_LIBRARY_PATH \
-	  make
-	LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:$LD_LIBRARY_PATH ./B2MC --help
+	if [ ! -f "./lib/libg2c.so" ] ; then
+		ln -s /usr/lib64/libg2c.so.0 ./lib/libg2c.so
+	fi
+	CC=${CC} CXX=${CXX} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} make
+	LD_LIBRARY_PATH=${LD_LIBRARY_PATH} ./B2MC --help
+
 elif [ $UBUNTU == "y" ] ; then
 	cd
 	sudo apt-get install -y libxi-dev
