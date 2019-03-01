@@ -4,11 +4,12 @@ CPPFLAGS += -Df2cFortran
 ### CERNLIB
 ifeq ($(CERN_ROOT),)
 CERN_ROOT := CERN_ROOT=$(USER)/cernlib-2006
-endif
 CERNINC = $(CERN_ROOT)/include
 CERNLIB = -L$(CERN_ROOT)/lib
-CERNLIBS = -lmathlib -lpacklib -lgraflib -lgrafX11 -lkernlib -lgfortran
 CPPFLAGS += -I$(CERNINC)
+LDFLAGS += $(CERNLIB)
+endif
+CERNLIBS = -lmathlib -lpacklib -lgraflib -lgrafX11 -lkernlib -lgfortran
 EXTRALIBS += $(CERNLIBS)
 
 ### GEANT4
@@ -61,8 +62,6 @@ clean::
 
 lib:
 	$(MAKE) -C lib
-
-LDFLAGS += $(CERNLIB)
 
 CXXFLAGS_WITHOUT_O := $(filter-out -O% , $(CXXFLAGS)) 
 CXXFLAGS_WITHOUT_O := $(filter-out +O% , $(CXXFLAGS_WITHOUT_O))
