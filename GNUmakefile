@@ -17,13 +17,18 @@ EXTRALIBS += $(shell geant4-config --libs)
 G4WORKDIR = .
 
 ### OTHER LIBS
-GCCVERSION := $(shell gcc --version | grep ^gcc | sed 's/^.* //g')
+GCCVERSION := $(shell gcc -dumpversion)
+# this is SL6 gcc 7
 ifeq "$(GCCVERSION)" "7.3.0"
-	EXTRALIBS += -L./lib -L$(USER)/gcc-7.3.0/lib64 -lg2c -lm
+EXTRALIBS += -L./lib -L$(USER)/gcc-7.3.0/lib64 -lg2c -lm
+# this is Ubuntu gcc 7
+else ifeq "$(GCCVERSION)" "7"
+EXTRALIBS += -L./lib -lg2c -lm
+# this is SL6 gcc 6
 else ifeq "$(GCCVERSION)" "6.3.1"
-	EXTRALIBS +=  -L./lib -L/opt/rh/devtoolset-6/root/usr/lib/gcc/x86_64-redhat-linux/6.3.1 -lg2c -lm
+EXTRALIBS +=  -L./lib -L/opt/rh/devtoolset-6/root/usr/lib/gcc/x86_64-redhat-linux/6.3.1 -lg2c -lm
 else
-	$(warning GCC version not recognized )
+$(warning GCC version not recognized )
 endif
 
 ### MY INCS
