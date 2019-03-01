@@ -83,68 +83,6 @@ then
     exit 1
 fi
 
-# Check for ROOT
-if [ -z "${ROOTSYS}" ] ;
-then
-    echo ""
-    echo "ROOT is a mandatory dependency but it seems that it is not installed"
-    echo "(looking for a non null ROOTSYS variable)."
-	echo "Maybe you have just forgotten to set up the root enviroment with the"
-	echo "script thisroot.sh."
-    echo "In that case please run that script and then restart the installation."
-    echo ""
-    echo "If ROOT is not installed in your system, this script can take care of"
-    echo "the ROOT installation."
-    echo ""
-    echo -n "Do you want this installer to install ROOT? (y|n) : "
-    read ROOTREP
-    if [ "${ROOTREP}" == "n" ];
-    then
-		echo -n "Do you want this installer to continue anyway? (y|n) : "
-		read CONTINUE
-		if [ "${CONTINUE}" == "n" ];
-		then
-			exit 1
-		else
-			CONTINUE = "" 
-		fi
-    elif [ "${ROOTREP}" == "y" ];
-    then
-		echo -n "Set to install it (ROOTREP=\"y\")"
-    else
-		echo "I didn't understand your answer. Sorry, try again."
-		exit 1
-    fi
-fi
-
-# Check for Geant4
-if [ ! -d "/usr/local/geant4" ] && [ ! -d "${HOME}/geant4-${GEANTVERS}" ] ;
-then
-    echo ""
-    echo "Geant4 is a mandatory dependency but it seems that it is not installed"
-    echo "(looking for the /usr/local/geant4 or ${HOME}/geant4-${GEANTVERS} folders)."
-    echo ""
-    echo -n "Do you want this installer to install Geant4? (y|n) : "
-    read GEANTREP
-    if [ "${GEANTREP}" == "n" ];
-    then
-		echo -n "Do you want this installer to continue anyway? (y|n) : "
-		read CONTINUE
-		if [ "${CONTINUE}" == "n" ];
-		then
-			exit 1
-		else
-			CONTINUE = "" 
-		fi
-    elif [ "${GEANTREP}" == "y" ];
-    then
-		echo -n "Set to install it (GEANTREP=\"y\")"
-    else
-		echo "I didn't understand your answer. Sorry, try again."
-		exit 1
-    fi
-fi
-
 #############################################################################
 #                                                                           #
 #                                 GCC COMPILER (SL6)                        #
@@ -239,7 +177,7 @@ END
 fi
 
 #install Geant4 if necessary
-if [ "${GEANTREP}" == "y" ];
+if [ -z "${G4INSTALL}" ] ;
 then
 	echo ""
 	echo "-------------------"
@@ -376,7 +314,7 @@ EOF
 fi
 
 #install root if necessary
-if [ "${ROOTREP}" == "y" ];
+if [ -z "${ROOTSYS}" ] ;
 then
 	echo ""
 	echo "-------------------"
@@ -520,7 +458,7 @@ elif [ $UBUNTU == "y" ] ; then
 		mkdir cernlib_debuild
 		cd cernlib_debuild
 		wget http://mirrors.kernel.org/ubuntu/pool/main/libx/libxp/libxp-dev_1.0.2-1ubuntu1_amd64.deb
-		sudo apt-get install ./libxp-dev_1.0.2-1ubuntu1_amd64.deb
+		sudo apt-get install -y ./libxp-dev_1.0.2-1ubuntu1_amd64.deb
 		sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
 		sudo apt-get update
 		sudo apt-get build-dep -y cernlib
