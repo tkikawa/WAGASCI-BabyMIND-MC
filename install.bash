@@ -446,11 +446,11 @@ EOF
 		echo $LD_LIBRARY_PATH
 		# Download and install ROOT
 		ROOTDIR="${HOME}/ROOT"
-		# mkdir -p ${ROOTDIR}/{sources,${ROOTVERS},${ROOTVERS}-build}
+		mkdir -p ${ROOTDIR}/{sources,${ROOTVERS},${ROOTVERS}-build}
 		cd ${ROOTDIR}
-		# git clone http://github.com/root-project/root.git sources
+		git clone http://github.com/root-project/root.git sources
 		cd sources
-		# git checkout -b v${ROOTVERS} v${ROOTVERS}
+		git checkout -b v${ROOTVERS} v${ROOTVERS}
 		cd ../${ROOTVERS}-build
 		${CMAKE} \
   			-DCMAKE_C_COMPILER=$(which gcc) \
