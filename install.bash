@@ -349,10 +349,13 @@ EOF
 		make -j56
 		make install
 		source ${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh
+		# remove the /usr/lib64 that geant4make.sh has inserted in the LD_LIBRARY_PATH
+		LD_LIBRARY_PATH=$(echo ${LD_LIBRARY_PATH} | awk -v RS=: -v ORS=: '/usr\/lib64/ {next} {print}')
 		cat >> "${HOME}/.bash_profile" <<EOF
 # set PATH to include Geant4
 if [ -f "${HOME}/geant4-${GEANTVERS}/bin/geant4.sh" ] ; then
    source ${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh
+   export LD_LIBRARY_PATH=\$(echo \${LD_LIBRARY_PATH} | awk -v RS=: -v ORS=: '/usr\/lib64/ {next} {print}')
 fi
 EOF
 		cd && rm -rf geant4-${GEANTVERS}-build geant4-sources
