@@ -26,6 +26,27 @@ GCCREP="1"
 PYTHONVERS="2.7.13"
 CLHEPVERS="2.4.1.0"
 
+# Define a function that checks if a package is installed
+
+function isinstalled {
+    if [ $SL6 == "y" ];
+    then
+		if yum list installed "$@" >/dev/null 2>&1; then
+			true
+		else
+			false
+		fi
+    elif [ $UBUNTU == "y" ];
+    then
+		dpkg -s $1 &> /dev/null
+		if [ $? -eq 0 ]; then
+			true
+		else
+			false
+		fi
+    fi
+}
+
 # Check the Ubuntu and Scientific Linux releases
 
 if [ ! -f "/usr/bin/lsb_release" ] && [ ! -f "/etc/redhat-release" ];
@@ -514,53 +535,54 @@ fi
 EOF
 	fi
 elif [ $UBUNTU == "y" ] ; then
-	# CERNLIB
-	cd
-	wget http://www-zeuthen.desy.de/linear_collider/cernlib/new/cernlib-20061220+dfsg3.patches.2019.02.03.txt
-	sudo apt install -y devscripts
-	rm -rf cernlib_debuild
-	mkdir cernlib_debuild
-	cd cernlib_debuild
-	wget http://mirrors.kernel.org/ubuntu/pool/main/libx/libxp/libxp-dev_1.0.2-1ubuntu1_amd64.deb
-	sudo apt-get install ./libxp-dev_1.0.2-1ubuntu1_amd64.deb
-	sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
-	sudo apt-get update
-	sudo apt-get build-dep -y cernlib
-	apt-get source cernlib
-	cd cernlib-20061220*
-	patch -p1 < ../../cernlib-20061220+dfsg3.patches.2019.02.03.txt
-	debuild -us -uc # > ../debuild_us_uc.cernlib.out.txt 2>&1
-	cd ..
-	rm -f cernlib-extras_*.deb pawserv_*.deb zftp_*.deb
-	sudo dpkg -i *.deb
-	sudo apt-get -y purge cernlib cernlib-core cernlib-core-dev
-	# LIBPAW
-	sudo apt-get build-dep -y paw
-	apt-get source paw
-	cd paw-2.14.04*
-	debuild -us -uc # > ../debuild_us_uc.paw.out.txt 2>&1
-	cd ..
-	sudo dpkg -i *.deb
-	sudo apt-get -y purge cernlib
-	# CERNLIB Monte Carlo
-	sudo apt-get build-dep -y cernlib-montecarlo
-	apt-get source cernlib-montecarlo
-	cd mclibs-20061220*
-	debuild -us -uc # > ../debuild_us_uc.mclibs.out.txt 2>&1
-	cd ..
-	sudo dpkg -i *.deb
-	sudo apt-get -y purge cernlib
-	sudo apt-get build-dep -y geant321
-	# Geant321
-	apt-get source geant321
-	cd geant321-3.21.14*
-	debuild -us -uc # > ../debuild_us_uc.geant321.out.txt 2>&1
-	cd ..
-	sudo dpkg -i *.deb
-	# Do not "update" the installed libraries
-	sudo apt-mark hold `ls -1 *.deb | sed -e '{s/_.*\.deb//}'`
-	cd .. && rm -rf cernlib_debuild
-	export CERN_ROOT=
+	if ! isinstalled cernlib ; then
+		# CERNLIB
+		cd
+		wget http://www-zeuthen.desy.de/linear_collider/cernlib/new/cernlib-20061220+dfsg3.patches.2019.02.03.txt
+		sudo apt install -y devscripts
+		rm -rf cernlib_debuild
+		mkdir cernlib_debuild
+		cd cernlib_debuild
+		wget http://mirrors.kernel.org/ubuntu/pool/main/libx/libxp/libxp-dev_1.0.2-1ubuntu1_amd64.deb
+		sudo apt-get install ./libxp-dev_1.0.2-1ubuntu1_amd64.deb
+		sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
+		sudo apt-get update
+		sudo apt-get build-dep -y cernlib
+		apt-get source cernlib
+		cd cernlib-20061220*
+		patch -p1 < ../../cernlib-20061220+dfsg3.patches.2019.02.03.txt
+		debuild -us -uc # > ../debuild_us_uc.cernlib.out.txt 2>&1
+		cd ..
+		rm -f cernlib-extras_*.deb pawserv_*.deb zftp_*.deb
+		sudo dpkg -i *.deb
+		sudo apt-get -y purge cernlib cernlib-core cernlib-core-dev
+		# LIBPAW
+		sudo apt-get build-dep -y paw
+		apt-get source paw
+		cd paw-2.14.04*
+		debuild -us -uc # > ../debuild_us_uc.paw.out.txt 2>&1
+		cd ..
+		sudo dpkg -i *.deb
+		sudo apt-get -y purge cernlib
+		# CERNLIB Monte Carlo
+		sudo apt-get build-dep -y cernlib-montecarlo
+		apt-get source cernlib-montecarlo
+		cd mclibs-20061220*
+		debuild -us -uc # > ../debuild_us_uc.mclibs.out.txt 2>&1
+		cd ..
+		sudo dpkg -i *.deb
+		sudo apt-get -y purge cernlib
+		sudo apt-get build-dep -y geant321
+		# Geant321
+		apt-get source geant321
+		cd geant321-3.21.14*
+		debuild -us -uc # > ../debuild_us_uc.geant321.out.txt 2>&1
+		cd ..
+		sudo dpkg -i *.deb
+		# Do not "update" the installed libraries
+		sudo apt-mark hold `ls -1 *.deb | sed -e '{s/_.*\.deb//}'`
+		cd .. && rm -rf cernlib_debuild
+	fi
 fi
 
 #############################################################################
