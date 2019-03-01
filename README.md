@@ -30,19 +30,19 @@ server. As for Ubuntu, it is the most wide-spread Linux distribution and is
 useful if you want to test the software on your machine.
 
 To install the software with all its dependencies I have written a bash shell
-script called `install.bash`. Basically you just have to launch it and answer a
-couple of simple questions and the script would install everything automatically.
-Anyway, the script makes a couple of assumptions behind the hood:
+script called `install.bash`. Basically you just have to launch it and the
+script will install everything automatically. Anyway, the script makes a
+couple of assumptions behind the hood:
 
 - If the OS is SL6, it is assumed that we are working in a KEKCC account
-so we have no sudo access. This makes things harder but anyway the user is
+so we have no sudo access. This makes things a little harder but anyway the user is
 relieved from any dirty work.
  - If the OS is Ubuntu, it is assumed that the user has complete access to the
  system.  So it is possible to run command with sudo.
 
 To install the software first make sure that you have git installed (in Ubuntu
-`sudo apt install git`, git is already installed on the KEKCC server), then issue
-the following commands in a bash shell:
+`sudo apt install git`, while git is already installed on the KEKCC server),
+then issue the following commands in a bash shell:
 
 ```
 cd
@@ -52,9 +52,18 @@ chmod a+x install.bash
 ./install.bash
 ```
 
-Disclaimer: consider that the installation script is still work in progress. You
-may (or may not) need to adjust a few variables to reflect your particular
-needs.
+After the installation is concluded, it is better to exit from the ssh session
+and login again to make sure that the environment is correctly set for later use
+(the .bashrc file is automatically sourced only during login).
+
+Note: if you already have an installation of ROOT and/or Geant4 on your machine, make
+sure to source the thisroot.sh and/or geant4make.sh files before running the
+script.
+
+Note: the script takes quite long (a couple of hours depending on your hardware,
+while on the KEKCC server only half an hour) to complete because it has to
+compile a lot of code. In Ubuntu you need occasionally to input your sudo
+password, so keep an eye on the shell.
 
 ### KEKCC
 
