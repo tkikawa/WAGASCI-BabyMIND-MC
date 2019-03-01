@@ -11,9 +11,6 @@
 # This is a bash script that installs the WAGASCI-BabyMIND-MC software
 # along with all its dependencies for the Ubuntu and Scientific Linux OS.
 
-ROOTREP="n"
-GEANTREP="n"
-CONTINUE="n"
 UBUNTU="n"
 SL6="n"
 ROOTVERS="6-14-06"
@@ -232,7 +229,7 @@ EOF
 
 		#############################################################################
 		#                                                                           #
-		#                                 CMAKE 3                                   #
+		#                                 CMAKE 3 (SL6)                             #
 		#                                                                           #
 		#############################################################################
 		
@@ -262,7 +259,7 @@ if [ -d "${HOME}/cmake-${CMAKEVERS}/bin" ] ; then
 fi
 EOF
 			fi
-			cd && rm -rf cmake-${CMAKEVERS}-sources
+			cd && rm -rf cmake-${CMAKEVERS}-sources cmake-${CMAKEVERS}.tar.gz
 		fi
 
 		#############################################################################
