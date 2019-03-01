@@ -305,7 +305,7 @@ then
 		cat >> "${HOME}/.profile" <<EOF
 
 # set PATH to include Geant4
-if [ -f "/usr/local/geant4/bin/geant4.sh" ] ; then
+if [ -f "/usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh" ] ; then
    source /usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh
 fi
 EOF
