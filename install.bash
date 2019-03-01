@@ -524,6 +524,8 @@ elif [ $UBUNTU == "y" ] ; then
 	cd cernlib_debuild
 	wget http://mirrors.kernel.org/ubuntu/pool/main/libx/libxp/libxp-dev_1.0.2-1ubuntu1_amd64.deb
 	sudo apt-get install ./libxp-dev_1.0.2-1ubuntu1_amd64.deb
+	sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
+	sudo apt-get update
 	sudo apt-get build-dep -y cernlib
 	apt-get source cernlib
 	cd cernlib-20061220*
@@ -571,6 +573,7 @@ fi
 if [ $UBUNTU == "y" ] ; then
 	if [ ! -f "/usr/bin/g77" ] ; then
 		sudo tee -a /etc/apt/sources.list << END
+
 # Old hardy repository needed to install g77
 # It is recommended to comment or remove following lines after g77 installation
 deb [trusted=yes] http://old-releases.ubuntu.com/ubuntu/ hardy universe
@@ -582,6 +585,7 @@ END
 		sudo ln -s /usr/lib/gcc/x86_64-linux-gnu/7/libgcc_s.so /usr/lib/x86_64-linux-gnu/
 		export LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
 		tee -a $HOME/.profile << END
+
 # set LD_LIBRARY_PATH so it includes x86_64-linux-gnu if it exists
 if [ -d "/usr/lib/x86_64-linux-gnu" ] ; then
 LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:\$LD_LIBRARY_PATH"
