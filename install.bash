@@ -26,9 +26,6 @@ GCCREP="1"
 PYTHONVERS="2.7.13"
 CLHEPVERS="2.4.1.0"
 
-# Stop if there is some error
-set -e
-
 # Check the Ubuntu and Scientific Linux releases
 
 if [ ! -f "/usr/bin/lsb_release" ] && [ ! -f "/etc/redhat-release" ];
@@ -50,6 +47,8 @@ elif [ -f "/etc/redhat-release" ] && [ "`cat /etc/redhat-release`" == "Scientifi
 then
     SL6="y"
     CMAKE=cmake
+	# Stop if there is some error
+	set -e
 else
     echo "There is something wrong about OS detection."
     echo "UBUNTU = $UBUNTU"
@@ -536,7 +535,7 @@ elif [ $UBUNTU == "y" ] ; then
 	sudo dpkg -i *.deb
 	sudo apt-get -y purge cernlib cernlib-core cernlib-core-dev
 	# LIBPAW
-	sudo apt-get build-dep paw
+	sudo apt-get build-dep -y paw
 	apt-get source paw
 	cd paw-2.14.04*
 	debuild -us -uc # > ../debuild_us_uc.paw.out.txt 2>&1
@@ -544,14 +543,14 @@ elif [ $UBUNTU == "y" ] ; then
 	sudo dpkg -i *.deb
 	sudo apt-get -y purge cernlib
 	# CERNLIB Monte Carlo
-	sudo apt-get build-dep cernlib-montecarlo
+	sudo apt-get build-dep -y cernlib-montecarlo
 	apt-get source cernlib-montecarlo
 	cd mclibs-20061220*
 	debuild -us -uc # > ../debuild_us_uc.mclibs.out.txt 2>&1
 	cd ..
 	sudo dpkg -i *.deb
 	sudo apt-get -y purge cernlib
-	sudo apt-get build-dep geant321
+	sudo apt-get build-dep -y geant321
 	# Geant321
 	apt-get source geant321
 	cd geant321-3.21.14*
