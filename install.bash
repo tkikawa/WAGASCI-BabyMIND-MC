@@ -523,6 +523,8 @@ elif [ $UBUNTU == "y" ] ; then
 	rm -rf cernlib_debuild
 	mkdir cernlib_debuild
 	cd cernlib_debuild
+	wget http://mirrors.kernel.org/ubuntu/pool/main/libx/libxp/libxp-dev_1.0.2-1ubuntu1_amd64.deb
+	sudo apt-get install ./libxp-dev_1.0.2-1ubuntu1_amd64.deb
 	sudo apt-get build-dep -y cernlib
 	apt-get source cernlib
 	cd cernlib-20061220*
