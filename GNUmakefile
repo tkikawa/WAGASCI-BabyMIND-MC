@@ -3,7 +3,7 @@ CPPFLAGS += -Df2cFortran
 
 ### CERNLIB
 ifeq ($(CERN_ROOT),)
-CERN_ROOT := CERN_ROOT=$(USER)/cernlib-2006
+CERN_ROOT = $(USER)/cernlib-2006
 CERNINC = $(CERN_ROOT)/include
 CERNLIB = -L$(CERN_ROOT)/lib
 CPPFLAGS += -I$(CERNINC)
@@ -27,7 +27,7 @@ else ifeq "$(GCCVERSION)" "7"
 EXTRALIBS += -L./lib -lg2c -lm
 # this is SL6 gcc 6
 else ifeq "$(GCCVERSION)" "6.3.1"
-EXTRALIBS +=  -L./lib -L/opt/rh/devtoolset-6/root/usr/lib/gcc/x86_64-redhat-linux/6.3.1 -lg2c -lm
+EXTRALIBS += -L./lib -L/opt/rh/devtoolset-6/root/usr/lib/gcc/x86_64-redhat-linux/6.3.1 -lg2c -lm
 else
 $(warning GCC version not recognized )
 endif
