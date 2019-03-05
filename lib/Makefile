@@ -1,7 +1,7 @@
 ROOTINC = -I`root-config --incdir`
 CLASSDIR = .
 CLASSINC= -I${CLASSDIR}
-INCDIRS = ${ROOTINC}${CLASSINC}
+INCDIRS = ${ROOTINC} ${CLASSINC}
 
 CXXFLAGS  = `root-config --cflags`
 COPTFLAGS = -g

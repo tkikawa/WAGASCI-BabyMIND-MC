@@ -11,20 +11,32 @@
 # This is a bash script that installs the WAGASCI-BabyMIND-MC software
 # along with all its dependencies for the Ubuntu and Scientific Linux OS.
 
-ROOTREP="n"
-GEANTREP="n"
-CONTINUE="n"
 UBUNTU="n"
 SL6="n"
 ROOTVERS="6-14-06"
 GEANTVERS="v10.5.0"
 CMAKEVERS="3.13.4"
-GCCVERS_UBUNTU="7.3.0"
-GCCVERS="6.3.1"
-GCCVERS_SL6="4.4.7"
-GCCREP="1"
-PYTHONVERS="2.7.13"
-CLHEPVERS="2.4.1.0"
+
+# Define a function that checks if a package is installed
+
+function isinstalled {
+    if [ $SL6 == "y" ];
+    then
+		if yum list installed "$@" >/dev/null 2>&1; then
+			true
+		else
+			false
+		fi
+    elif [ $UBUNTU == "y" ];
+    then
+		dpkg -s $1 &> /dev/null
+		if [ $? -eq 0 ]; then
+			true
+		else
+			false
+		fi
+    fi
+}
 
 # Check the Ubuntu and Scientific Linux releases
 
@@ -68,184 +80,101 @@ then
     exit 1
 fi
 
-# Check for ROOT
-if [ -z "${ROOTSYS}" ] ;
-then
-    echo ""
-    echo "ROOT is a mandatory dependency but it seems that it is not installed"
-    echo "(looking for a non null ROOTSYS variable)."
-	echo "Maybe you have just forgotten to set up the root enviroment with the"
-	echo "script thisroot.sh."
-    echo "In that case please run that script and then restart the installation."
-    echo ""
-    echo "If ROOT is not installed in your system, this script can take care of"
-    echo "the ROOT installation."
-    echo ""
-    echo -n "Do you want this installer to install ROOT? (y|n) : "
-    read ROOTREP
-    if [ "${ROOTREP}" == "n" ];
-    then
-		echo -n "Do you want this installer to continue anyway? (y|n) : "
-		read CONTINUE
-		if [ "${CONTINUE}" == "n" ];
-		then
-			exit 1
-		else
-			CONTINUE = "" 
-		fi
-    elif [ "${ROOTREP}" == "y" ];
-    then
-		echo -n "Set to install it (ROOTREP=\"y\")"
-    else
-		echo "I didn't understand your answer. Sorry, try again."
-		exit 1
-    fi
-fi
-
-# Check for Geant4
-if [ ! -d "/usr/local/geant4" ] && [ ! -d "${HOME}/geant4-${GEANTVERS}" ] ;
-then
-    echo ""
-    echo "Geant4 is a mandatory dependency but it seems that it is not installed"
-    echo "(looking for the /usr/local/geant4 or ${HOME}/geant4-${GEANTVERS} folders)."
-    echo ""
-    echo -n "Do you want this installer to install Geant4? (y|n) : "
-    read GEANTREP
-    if [ "${GEANTREP}" == "n" ];
-    then
-		echo -n "Do you want this installer to continue anyway? (y|n) : "
-		read CONTINUE
-		if [ "${CONTINUE}" == "n" ];
-		then
-			exit 1
-		else
-			CONTINUE = "" 
-		fi
-    elif [ "${GEANTREP}" == "y" ];
-    then
-		echo -n "Set to install it (GEANTREP=\"y\")"
-    else
-		echo "I didn't understand your answer. Sorry, try again."
-		exit 1
-    fi
-fi
-
 #############################################################################
 #                                                                           #
-#                                 GCC COMPILER                              #
+#                                 GCC COMPILER (SL6)                        #
 #                                                                           #
 #############################################################################
 
 # Check for GCC
 if [ $SL6 == "y" ]; then
-	GCCVERS_DETECTED=`gcc -dumpversion`
-	if [ ${GCCVERS_DETECTED} == ${GCCVERS_UBUNTU} ] ; then
-		echo ""
-		echo "The compiler version is ${GCCVERS_DETECTED}, the same as the Ubuntu 18.04 one."
-		echo "So far so good."
-		export CC=${HOME}/gcc-${GCCVERS_DETECTED}/bin/gcc
-		export CXX=${HOME}/gcc-${GCCVERS_DETECTED}/bin/g++
-		export GCCVERS=${GCCVERS_DETECTED}
-		export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib:$LD_LIBRARY_PATH
-		export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:$LD_LIBRARY_PATH
-	elif [ ${GCCVERS_DETECTED} == ${GCCVERS} ] ; then
-		echo ""
-		echo "The compiler version is ${GCCVERS_DETECTED}, enough for our purposes."
-		echo "So far so good."
-		export CC=/opt/rh/devtoolset-6/root/usr/bin/gcc
-		export CXX=/opt/rh/devtoolset-6/root/usr/bin/g++
-		export GCCVERS=${GCCVERS_DETECTED}
-		export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib/gcc/x86_64-redhat-linux/${GCCVERS}:$LD_LIBRARY_PATH
-		export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib64:$LD_LIBRARY_PATH
-	elif [ ${GCCVERS_DETECTED} == ${GCCVERS_SL6} ] ; then
-		echo ""
-		echo "The compiler version ${GCCVERS_DETECTED} is ancient, not enough to compile"
-		echo "ROOT6 or Geant4 v10.5.0: it must be updated. Choose 1 if you want to just"
-		echo "use the precompiled version ${GCCVERS} or choose 2 to compile the same"
-		echo "version as Ubuntu 18.04 ${GCCVERS_UBUNTU}. The two version are both fine"
-		echo "but to compile the latter one it takes about 3 hours."
-		echo ""
-		echo -n "[1] ${GCCVERS} (Recommended) - [2] ${GCCVERS_UBUNTU} "
-		read GCCREP
-		if [ "${GCCREP}" == "1" ];
-		then
-			export PATH=/opt/rh/devtoolset-6/root/usr/bin:$PATH
-			export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib/gcc/x86_64-redhat-linux/${GCCVERS}:$LD_LIBRARY_PATH
-			export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib64:$LD_LIBRARY_PATH
-			export CC=/opt/rh/devtoolset-6/root/usr/bin/gcc
-			export CXX=/opt/rh/devtoolset-6/root/usr/bin/g++
-			cat >> "${HOME}/.bash_profile" <<EOF
-
-# set PATH to include a more recent gcc version
-if [ -d "/opt/rh/devtoolset-6/root/usr/bin" ] ; then
-   export PATH=/opt/rh/devtoolset-6/root/usr/bin:\$PATH
-   export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib/gcc/x86_64-redhat-linux/${GCCVERS}:\$LD_LIBRARY_PATH
-   export LD_LIBRARY_PATH=/opt/rh/devtoolset-6/root/usr/lib64:\$LD_LIBRARY_PATH
-fi
-EOF
-		elif [ "${GCCREP}" == "2" ];
-		then
-			cd
-			wget https://ftp.gnu.org/gnu/gcc/gcc-${GCCVERS}/gcc-${GCCVERS}.tar.gz
-			tar xzf gcc-${GCCVERS}.tar.gz
-			mv -f gcc-${GCCVERS} gcc-${GCCVERS}-sources
-			cd gcc-${GCCVERS}-sources
-			wget https://gmplib.org/download/gmp/gmp-6.1.0.tar.bz2
-			wget https://www.mpfr.org/mpfr-3.1.4/mpfr-3.1.4.tar.bz2
-			wget https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz
-			wget http://isl.gforge.inria.fr/isl-0.16.1.tar.bz2
-			./contrib/download_prerequisites
-			cd ..
-			mkdir -p objdir
-			mkdir -p gcc-${GCCVERS}
-			cd objdir
-			$PWD/../gcc-${GCCVERS}-sources/configure --prefix=$HOME/gcc-${GCCVERS} --enable-languages=c,c++,fortran,go
-			make -j56
-			make install
-			export PATH=${HOME}/gcc-${GCCVERS}/bin:$PATH
-			export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib:$LD_LIBRARY_PATH
-			export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:$LD_LIBRARY_PATH
-			export CC=${HOME}/gcc-${GCCVERS_DETECTED}/bin/gcc
-			export CXX=${HOME}/gcc-${GCCVERS_DETECTED}/bin/g++
-			hash -r
-			cat >> "${HOME}/.bash_profile" <<EOF
-
-# set PATH to include a more recent gcc version
-if [ -d "${HOME}/gcc-${GCCVERS}/bin" ] ; then
-   export PATH=${HOME}/gcc-${GCCVERS}/bin:\$PATH
-   export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib:\$LD_LIBRARY_PATH
-   export LD_LIBRARY_PATH=${HOME}/gcc-${GCCVERS}/lib64:\$LD_LIBRARY_PATH
-fi
-EOF
-			cd && rm -rf gcc-${GCCVERS}-sources objdir
-		else
-			echo "I didn't understand your answer. Sorry, try again."
-			exit 1
-		fi
+	echo ""
+	echo ""
+	echo "Loading GCC 8.2.0 environment"
+	module load gcc/820
+	if grep -Fxq "module load gcc/820" "${HOME}/.bashrc"
+	then
+		echo "gcc/820 module already present in the .bashrc file"
 	else
-		echo "The detected GCC version ${GCCVERS_DETECTED} not recognized."
-		echo "If this version is C++11 compatible (>= 4.8.1) it is probably fine."
-		echo "Otherwise you need to upgrade to a C++11 compatible version, but it"
-		echo "is difficult to say without testing. If you want to upgrade GCC with"
-		echo "this script just set the GCCVERS_SL6=${GCCVERS_DETECTED} variable at"
-		echo "the beginning of the script and re-run it."
-		echo ""
-		echo -n "Do you want this installer to continue anyway? (y|n) : "
-		read CONTINUE
-		if [ "${CONTINUE}" == "n" ];
+		cat >> "${HOME}/.bashrc" <<EOF
+
+# load GCC 8.2.0 environment
+module load gcc/820
+EOF
+	fi
+
+	#############################################################################
+	#                                                                           #
+	#                                 PYTHON (SL6)                              #
+	#                                                                           #
+	#############################################################################
+
+	echo ""
+	echo "Loading Python 3.5.1 environment"
+	module load python/3.5
+	if grep -Fxq "module load python/3.5" "${HOME}/.bashrc"
+	then
+		echo "python/3.5 module already present in the .bashrc file"
+	else
+		cat >> "${HOME}/.bashrc" <<EOF
+
+# load Python 3.5.1 environment
+module load python/3.5
+EOF
+	fi
+
+	echo ""
+	echo "Loading Python 2.7.11 environment"
+	module load python/2.7
+	if grep -Fxq "module load python/2.7" "${HOME}/.bashrc"
+	then
+		echo "python/2.7 module already present in the .bashrc file"
+	else
+		cat >> "${HOME}/.bashrc" <<EOF
+
+# load Python 2.7.11 environment
+module load python/2.7
+EOF
+	fi
+fi
+
+#############################################################################
+#                                                                           #
+#                               G77 (UBUNTU)                                #
+#                                                                           #
+#############################################################################
+
+if [ $UBUNTU == "y" ] ; then
+	if [ ! -f "/usr/bin/g77" ] ; then
+		sudo tee -a /etc/apt/sources.list << END
+
+# Old hardy repository needed to install g77
+# It is recommended to comment or remove following lines after g77 installation
+deb [trusted=yes] http://old-releases.ubuntu.com/ubuntu/ hardy universe
+deb-src [trusted=yes] http://old-releases.ubuntu.com/ubuntu/ hardy universe
+deb [trusted=yes] http://old-releases.ubuntu.com/ubuntu/ hardy-updates universe
+deb-src [trusted=yes] http://old-releases.ubuntu.com/ubuntu/ hardy-updates universe
+END
+		sudo apt-get update && sudo apt-get install -y g77
+		sudo ln -s /usr/lib/gcc/x86_64-linux-gnu/7/libgcc_s.so /usr/lib/x86_64-linux-gnu/
+		export LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+		if grep -Fxq "# set g77 environment" "${HOME}/.bashrc"
 		then
-			exit 1
+			echo "g77 environment settings already present in the .bashrc file"
 		else
-			CONTINUE = "" 
+			tee -a $HOME/.bashrc << END
+
+# set g77 environment
+if [ -d "/usr/lib/x86_64-linux-gnu" ] ; then
+   export LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:\$LD_LIBRARY_PATH"
+fi
+END
 		fi
 	fi
 fi
 
-echo ""
-echo ""
-
 #install Geant4 if necessary
-if [ "${GEANTREP}" == "y" ];
+if [ -z "${G4INSTALL}" ] ;
 then
 	echo ""
 	echo "-------------------"
@@ -270,7 +199,7 @@ then
 		git checkout ${GEANTVERS}
 		cd ..
 		mkdir -p geant4-${GEANTVERS}-build
-		cd build
+		cd geant4-${GEANTVERS}-build
 		${CMAKE} -DCMAKE_INSTALL_PREFIX=/usr/local/geant4 \
 				 -DGEANT4_INSTALL_DATA=ON \
 				 -DGEANT4_BUILD_MULTITHREADED=ON \
@@ -281,13 +210,18 @@ then
 		make -j8
 		sudo make install
 		source /usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh
-		cat >> "${HOME}/.profile" <<EOF
+		if grep -Fxq "# set PATH to include Geant4" "${HOME}/.bashrc"
+		then
+			echo "Geant 4 source command already present in the .bashrc file"
+		else
+			cat >> "${HOME}/.bashrc" <<EOF
 
 # set PATH to include Geant4
-if [ -f "/usr/local/geant4/bin/geant4.sh" ] ; then
+if [ -f "/usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh" ] ; then
    source /usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh
 fi
 EOF
+		fi
 		cd && rm -rf geant4-${GEANTVERS}-build
 	elif [ $SL6 == "y" ];
 	then
@@ -295,7 +229,7 @@ EOF
 
 		#############################################################################
 		#                                                                           #
-		#                                 CMAKE 3                                   #
+		#                                 CMAKE 3 (SL6)                             #
 		#                                                                           #
 		#############################################################################
 		
@@ -313,13 +247,19 @@ EOF
 			make install
 			export PATH=${HOME}/cmake-${CMAKEVERS}/bin:$PATH
 			hash -r
-			cat >> "${HOME}/.bash_profile" <<EOF
-# set PATH to include a more recent cmake version
+			if grep -Fxq "# set CMAKE environment" "${HOME}/.bashrc"
+			then
+				echo "Cmake PATH export already present in the .bashrc file"
+			else
+				cat >> "${HOME}/.bashrc" <<EOF
+
+# set CMAKE environment
 if [ -d "${HOME}/cmake-${CMAKEVERS}/bin" ] ; then
    export PATH=${HOME}/cmake-${CMAKEVERS}/bin:\$PATH
 fi
 EOF
-			cd && rm -rf cmake-${CMAKEVERS}-sources
+			fi
+			cd && rm -rf cmake-${CMAKEVERS}-sources cmake-${CMAKEVERS}.tar.gz
 		fi
 
 		#############################################################################
@@ -337,32 +277,41 @@ EOF
 		mkdir -p geant4-${GEANTVERS}-build
 		mkdir -p geant4-${GEANTVERS}
 		cd geant4-${GEANTVERS}-build
-		CC=$(CC) CXX=$(CXX) ${CMAKE} \
-		  -DCMAKE_INSTALL_PREFIX=../geant4-${GEANTVERS} \
-		  -DGEANT4_INSTALL_DATA=ON \
-		  -DGEANT4_BUILD_MULTITHREADED=ON \
-		  -DGEANT4_USE_OPENGL_X11=ON \
-		  -DGEANT4_USE_QT=ON \
-		  -DGEANT4_USE_SYSTEM_EXPAT=ON \
-		../geant4-sources
+		${CMAKE} -DCMAKE_C_COMPILER=$(which gcc) \
+				 -DCMAKE_CXX_COMPILER=$(which g++) \
+				 -DCMAKE_INSTALL_PREFIX=../geant4-${GEANTVERS} \
+				 -DGEANT4_INSTALL_DATA=ON \
+				 -DGEANT4_BUILD_MULTITHREADED=ON \
+				 -DGEANT4_USE_OPENGL_X11=ON \
+				 -DGEANT4_USE_QT=ON \
+				 -DGEANT4_USE_SYSTEM_EXPAT=ON \
+				 ../geant4-sources
 		make -j56
 		make install
+		TEMP=$LD_LIBRARY_PATH
 		source ${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh
-		# remove the /usr/lib64 that geant4make.sh has inserted in the LD_LIBRARY_PATH
-		LD_LIBRARY_PATH=$(echo ${LD_LIBRARY_PATH} | awk -v RS=: -v ORS=: '/usr\/lib64/ {next} {print}')
-		cat >> "${HOME}/.bash_profile" <<EOF
-# set PATH to include Geant4
-if [ -f "${HOME}/geant4-${GEANTVERS}/bin/geant4.sh" ] ; then
-   source ${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh
-   export LD_LIBRARY_PATH=\$(echo \${LD_LIBRARY_PATH} | awk -v RS=: -v ORS=: '/usr\/lib64/ {next} {print}')
+		export LD_LIBRARY_PATH=$TEMP:${HOME}/geant4-${GEANTVERS}/lib64
+		if grep -Fxq "# set Geant4 environment" "${HOME}/.bashrc"
+		then
+			echo "Geant4 environment settings already present in the .bashrc file"
+		else
+			cat >> "${HOME}/.bashrc" <<EOF
+
+# set Geant4 environment
+if [ -f "${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh" ] ; then
+
+		TEMP=\$LD_LIBRARY_PATH
+		source ${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh
+		export LD_LIBRARY_PATH=\$TEMP:${HOME}/geant4-${GEANTVERS}/lib64
 fi
 EOF
+		fi
 		cd && rm -rf geant4-${GEANTVERS}-build geant4-sources
 	fi
 fi
 
 #install root if necessary
-if [ "${ROOTREP}" == "y" ];
+if [ -z "${ROOTSYS}" ] ;
 then
 	echo ""
 	echo "-------------------"
@@ -399,47 +348,29 @@ then
 		cd sources
 		git checkout -b v${ROOTVERS} v${ROOTVERS}
 		cd ../${ROOTVERS}-build
-		${CMAKE} -Dbuiltin_xrootd=ON -DCMAKE_INSTALL_PREFIX=${ROOTDIR}/${ROOTVERS} \
-				 ../sources
+		${CMAKE} \
+			-Dbuiltin_xrootd=ON \
+            -DCMAKE_INSTALL_PREFIX=${ROOTDIR}/${ROOTVERS} \
+			../sources
 		${CMAKE} --build . --target install -- -j8
 		cd
 		source ${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh
-		cat >> "${HOME}/.profile" <<EOF
+		if grep -Fxq "# set ROOT environment" "${HOME}/.bashrc"
+		then
+			echo "ROOT environment settings already present in the .bashrc file"
+		else
+			cat >> "${HOME}/.bashrc" <<EOF
 
-# set PATH to include ROOT
+# set ROOT environment
 if [ -f "${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh" ] ; then
    source ${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh
 fi
 EOF
+		fi
 		rm -rf ${ROOTDIR}/${ROOTVERS}-build
 	elif [ $SL6 == "y" ];
 	then
 
-		#############################################################################
-		#                                                                           #
-		#                                 PYTHON 2.7                                #
-		#                                                                           #
-		#############################################################################
-		
-		if [ "`python --version`" != "Python ${PYTHONVERS}" ] ; then
-			### Install Python ###
-			export PATH=/opt/rh/python27/root/usr/bin:$PATH
-			export PYTHON_LIBRARY=/opt/rh/python27/root/usr/lib64
-			export PYTHON_INCLUDE_DIR=/opt/rh/python27/root/usr/include/python2.7
-			export PYTHON_EXECUTABLE=/opt/rh/python27/root/usr/bin/python2.7
-			export LD_LIBRARY_PATH=$PYTHON_LIBRARY:$LD_LIBRARY_PATH
-			cat >> "${HOME}/.bash_profile" <<EOF
-
-# set PATH to include Python
-if [ -d "/opt/rh/python27/root/usr/bin" ] ; then
-   export PATH=/opt/rh/python27/root/usr/bin:\$PATH
-   export PYTHON_LIBRARY=/opt/rh/python27/root/usr/lib64
-   export PYTHON_INCLUDE_DIR=/opt/rh/python27/root/usr/include/python2.7
-   export PYTHON_EXECUTABLE=/opt/rh/python27/root/usr/bin/python2.7
-   export LD_LIBRARY_PATH=$PYTHON_LIBRARY:\$LD_LIBRARY_PATH
-fi
-EOF
-		fi
 
 		#############################################################################
 		#                                                                           #
@@ -447,6 +378,7 @@ EOF
 		#                                                                           #
 		#############################################################################
 		
+		echo $LD_LIBRARY_PATH
 		# Download and install ROOT
 		ROOTDIR="${HOME}/ROOT"
 		mkdir -p ${ROOTDIR}/{sources,${ROOTVERS},${ROOTVERS}-build}
@@ -455,37 +387,32 @@ EOF
 		cd sources
 		git checkout -b v${ROOTVERS} v${ROOTVERS}
 		cd ../${ROOTVERS}-build
-		CC=$(CC) CXX=$(CXX) ${CMAKE} \
-		  -Dbuiltin_xrootd=ON \
-		  -DCMAKE_INSTALL_PREFIX=${ROOTDIR}/${ROOTVERS} \
-		  -DPYTHON_EXECUTABLE=/opt/rh/python27/root/usr/bin/python \
-		  ../sources
-		CC=$(CC) CXX=$(CXX) ${CMAKE} \
-		  --build . --target install -- -j56
+		${CMAKE} \
+  			-DCMAKE_C_COMPILER=$(which gcc) \
+			-DCMAKE_CXX_COMPILER=$(which g++) \
+			-Dbuiltin_xrootd=ON \
+			-DCMAKE_INSTALL_PREFIX=${ROOTDIR}/${ROOTVERS} \
+			-DPYTHON_EXECUTABLE=$(which python3) \
+			../sources
+		${CMAKE} \
+			--build . --target install -- -j56
 		cd ..
 		rm -rf ${ROOTVERS}-build
 		cd
 		source ${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh
-		cat >> "${HOME}/.bash_profile" <<EOF
+		if grep -Fxq "# set ROOT environment" "${HOME}/.bashrc"
+		then
+			echo "ROOT environment settings already present in the .bashrc file"
+		else
+			cat >> "${HOME}/.bashrc" <<EOF
 
-# set PATH to include ROOT
+# set ROOT environment
 if [ -f "${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh" ] ; then
    source ${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh
 fi
 EOF
+		fi
 	fi
-fi
-
-# ROOT detection
-if [ -z ${ROOTSYS} ]; then
-	echo "Couldn't detect ROOT installation."
-	echo "Perhaps you forgot to source the thisroot.sh script."
-fi
-
-# GEANT4 detection
-if [ -z ${G4INSTALL} ]; then
-	echo "Couldn't detect Geant4 installation."
-	echo "Perhaps you forgot to source the geant4make.sh script."
 fi
 
 #############################################################################
@@ -501,9 +428,13 @@ if [ $SL6 == "y" ] ; then
 		export CERN_ROOT=${CERN}/${CERN_LEVEL}
 		export PATH=${CERN_ROOT}/bin:${PATH}
 		export LD_LIBRARY_PATH=${CERN_ROOT}/lib:${LD_LIBRARY_PATH}
-		cat >> "${HOME}/.bash_profile" <<EOF
+		if grep -Fxq "# set CERNLIB environment" "${HOME}/.bashrc"
+		then
+			echo "CERNLIB environment settings already present in the .bashrc file"
+		else
+			cat >> "${HOME}/.bashrc" <<EOF
 
-set PATH to include CERNLIB
+# set CERNLIB environment
 if [ -d "/home/t2k/tatsuya1/cern/cernlib" ] ; then
 	export CERN=/home/t2k/tatsuya1/cern/cernlib
 	export CERN_LEVEL=2006
@@ -512,85 +443,56 @@ if [ -d "/home/t2k/tatsuya1/cern/cernlib" ] ; then
 	export LD_LIBRARY_PATH=\${CERN_ROOT}/lib:\${LD_LIBRARY_PATH}
 fi
 EOF
+		fi
 	fi
 elif [ $UBUNTU == "y" ] ; then
-	# CERNLIB
-	cd
-	wget http://www-zeuthen.desy.de/linear_collider/cernlib/new/cernlib-20061220+dfsg3.patches.2019.02.03.txt
-	sudo apt install -y devscripts
-	rm -rf cernlib_debuild
-	mkdir cernlib_debuild
-	cd cernlib_debuild
-	wget http://mirrors.kernel.org/ubuntu/pool/main/libx/libxp/libxp-dev_1.0.2-1ubuntu1_amd64.deb
-	sudo apt-get install ./libxp-dev_1.0.2-1ubuntu1_amd64.deb
-	sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
-	sudo apt-get update
-	sudo apt-get build-dep -y cernlib
-	apt-get source cernlib
-	cd cernlib-20061220*
-	patch -p1 < ../../cernlib-20061220+dfsg3.patches.2019.02.03.txt
-	debuild -us -uc # > ../debuild_us_uc.cernlib.out.txt 2>&1
-	cd ..
-	rm -f cernlib-extras_*.deb pawserv_*.deb zftp_*.deb
-	sudo dpkg -i *.deb
-	sudo apt-get -y purge cernlib cernlib-core cernlib-core-dev
-	# LIBPAW
-	sudo apt-get build-dep -y paw
-	apt-get source paw
-	cd paw-2.14.04*
-	debuild -us -uc # > ../debuild_us_uc.paw.out.txt 2>&1
-	cd ..
-	sudo dpkg -i *.deb
-	sudo apt-get -y purge cernlib
-	# CERNLIB Monte Carlo
-	sudo apt-get build-dep -y cernlib-montecarlo
-	apt-get source cernlib-montecarlo
-	cd mclibs-20061220*
-	debuild -us -uc # > ../debuild_us_uc.mclibs.out.txt 2>&1
-	cd ..
-	sudo dpkg -i *.deb
-	sudo apt-get -y purge cernlib
-	sudo apt-get build-dep -y geant321
-	# Geant321
-	apt-get source geant321
-	cd geant321-3.21.14*
-	debuild -us -uc # > ../debuild_us_uc.geant321.out.txt 2>&1
-	cd ..
-	sudo dpkg -i *.deb
-	# Do not "update" the installed libraries
-	sudo apt-mark hold `ls -1 *.deb | sed -e '{s/_.*\.deb//}'`
-	cd .. && rm -rf cernlib_debuild
-	export CERN_ROOT=
-fi
-
-#############################################################################
-#                                                                           #
-#                               G77 (UBUNTU)                                #
-#                                                                           #
-#############################################################################
-
-if [ $UBUNTU == "y" ] ; then
-	if [ ! -f "/usr/bin/g77" ] ; then
-		sudo tee -a /etc/apt/sources.list << END
-
-# Old hardy repository needed to install g77
-# It is recommended to comment or remove following lines after g77 installation
-deb [trusted=yes] http://old-releases.ubuntu.com/ubuntu/ hardy universe
-deb-src [trusted=yes] http://old-releases.ubuntu.com/ubuntu/ hardy universe
-deb [trusted=yes] http://old-releases.ubuntu.com/ubuntu/ hardy-updates universe
-deb-src [trusted=yes] http://old-releases.ubuntu.com/ubuntu/ hardy-updates universe
-END
-		sudo apt-get update && sudo apt-get install -y g77
-		sudo ln -s /usr/lib/gcc/x86_64-linux-gnu/7/libgcc_s.so /usr/lib/x86_64-linux-gnu/
-		export LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
-		tee -a $HOME/.profile << END
-
-# set LD_LIBRARY_PATH so it includes x86_64-linux-gnu if it exists
-if [ -d "/usr/lib/x86_64-linux-gnu" ] ; then
-LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:\$LD_LIBRARY_PATH"
-export LD_LIBRARY_PATH
-fi
-END
+	if ! isinstalled cernlib ; then
+		# CERNLIB
+		cd
+		wget http://www-zeuthen.desy.de/linear_collider/cernlib/new/cernlib-20061220+dfsg3.patches.2019.02.03.txt
+		sudo apt install -y devscripts
+		rm -rf cernlib_debuild
+		mkdir cernlib_debuild
+		cd cernlib_debuild
+		wget http://mirrors.kernel.org/ubuntu/pool/main/libx/libxp/libxp-dev_1.0.2-1ubuntu1_amd64.deb
+		sudo apt-get install -y ./libxp-dev_1.0.2-1ubuntu1_amd64.deb
+		sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
+		sudo apt-get update
+		sudo apt-get build-dep -y cernlib
+		apt-get source cernlib
+		cd cernlib-20061220*
+		patch -p1 < ../../cernlib-20061220+dfsg3.patches.2019.02.03.txt
+		debuild -us -uc # > ../debuild_us_uc.cernlib.out.txt 2>&1
+		cd ..
+		rm -f cernlib-extras_*.deb pawserv_*.deb zftp_*.deb
+		sudo dpkg -i *.deb
+		sudo apt-get -y purge cernlib cernlib-core cernlib-core-dev
+		# LIBPAW
+		sudo apt-get build-dep -y paw
+		apt-get source paw
+		cd paw-2.14.04*
+		debuild -us -uc # > ../debuild_us_uc.paw.out.txt 2>&1
+		cd ..
+		sudo dpkg -i *.deb
+		sudo apt-get -y purge cernlib
+		# CERNLIB Monte Carlo
+		sudo apt-get build-dep -y cernlib-montecarlo
+		apt-get source cernlib-montecarlo
+		cd mclibs-20061220*
+		debuild -us -uc # > ../debuild_us_uc.mclibs.out.txt 2>&1
+		cd ..
+		sudo dpkg -i *.deb
+		sudo apt-get -y purge cernlib
+		sudo apt-get build-dep -y geant321
+		# Geant321
+		apt-get source geant321
+		cd geant321-3.21.14*
+		debuild -us -uc # > ../debuild_us_uc.geant321.out.txt 2>&1
+		cd ..
+		sudo dpkg -i *.deb
+		# Do not "update" the installed libraries
+		sudo apt-mark hold `ls -1 *.deb | sed -e '{s/_.*\.deb//}'`
+		cd .. && rm -rf cernlib_debuild
 	fi
 fi
 
@@ -605,14 +507,30 @@ echo "-------------------"
 #                                                                           #
 #############################################################################
 
+# ROOT detection
+if [ -z ${ROOTSYS} ]; then
+	echo "Couldn't detect ROOT installation."
+	echo "Perhaps you forgot to source the thisroot.sh script."
+	exit
+else
+	source ${ROOTSYS}/bin/thisroot.sh
+fi
+
+# GEANT4 detection
+if [ -z ${G4INSTALL} ]; then
+	echo "Couldn't detect Geant4 installation."
+	echo "Perhaps you forgot to source the geant4make.sh script."
+	exit
+fi
+
 if [ $SL6 == "y" ] ; then
 	cd
 	cd WAGASCI-BabyMIND-MC
 	if [ ! -f "./lib/libg2c.so" ] ; then
 		ln -s /usr/lib64/libg2c.so.0 ./lib/libg2c.so
 	fi
-	CC=${CC} CXX=${CXX} LD_LIBRARY_PATH=${LD_LIBRARY_PATH} make
-	LD_LIBRARY_PATH=${LD_LIBRARY_PATH} ./B2MC --help
+	make
+	./B2MC --help
 
 elif [ $UBUNTU == "y" ] ; then
 	cd
