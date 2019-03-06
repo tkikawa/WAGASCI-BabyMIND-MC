@@ -101,4 +101,8 @@ wiki](https://www-he.scphys.kyoto-u.ac.jp/research/Neutrino/WAGASCI/wiki/dokuwik
 - -m : Magnetic field on/off setting for BabyMIND  
 - -b : Batch command  
 
+### Sample NEUT file
+There is a neut file in sample_neutfile directory
+in order to make sure of correct operation. 
+
 ### Analyze ROOT files
