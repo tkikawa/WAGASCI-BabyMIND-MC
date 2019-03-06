@@ -22,7 +22,7 @@ developed by CERN.  ROOT 5.22 and ROOT 6.14.06 have been tested.
 Only two operative systems are tested and supported:
  - Ubuntu 18.04 64bit
  - Scientific Linux 6.10 64bit
- 
+
 The reason behind this choice is that the KEKCC work server is running on
 Scientific Linux 6.10 and the few WAGASCI collaborators that will ever dare to
 install and use this software, most likely will want to run it on the KEKCC
@@ -100,3 +100,5 @@ wiki](https://www-he.scphys.kyoto-u.ac.jp/research/Neutrino/WAGASCI/wiki/dokuwik
 3: WAGASCI1: water in,  WAGASCI2: water in  
 - -m : Magnetic field on/off setting for BabyMIND  
 - -b : Batch command  
+
+### Analyze ROOT files
