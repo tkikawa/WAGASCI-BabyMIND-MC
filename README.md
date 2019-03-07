@@ -113,7 +113,7 @@ Write additional information on making sense of it.
 ### Trees
 - tree: This tree is used for reconstruction
 - h1: This tree is used for T2K re-weight
-        There are the same information as 2 classes, fSimParticle and fSimVertex in h1 tree
+There are the same information as 2 classes, fSimParticle and fSimVertex in h1 tree
 
 ### Classes
 All the classes are in fDefaultReco class.
@@ -151,34 +151,34 @@ All the classes are in fDefaultReco class.
     - fBits
     - float edeposit: Energy deposit (MeV)
     - int trackid: GEANT4 particle ID of particles detected in each scintillator
-                   Particle IDs are shown in below page
-                   https://www.star.bnl.gov/public/comp/simu/gstar/Manual/particle_id.html
+    Particle IDs are shown in below page
+    https://www.star.bnl.gov/public/comp/simu/gstar/Manual/particle_id.html
     - int pdg: Particle code (Scheme of PDG) of particles detected in each scintillator
-               Particle codes are shown in ParticleCode(PDG) file in WAGASCI-BabyMIND-MC repository
+    Particle codes are shown in ParticleCode(PDG) file in WAGASCI-BabyMIND-MC repository
 
 #### B2HitSummary               
   - B2HitSummary (fB2Hit): the class for the hit information
     - fUniqueID
     - fBits
     - int mod: Module number (0-5)
-      Proton module = 0
-      WAGASCI1 (upstream) = 1
-      WAGASCI2 (downstream) = 2
-      South Side-MRD (left side) = 3
-      North Side-MRD (right side) = 4
-      Baby-MIND = 5
+    Proton module = 0
+    WAGASCI1 (upstream) = 1
+    WAGASCI2 (downstream) = 2
+    South Side-MRD (left side) = 3
+    North Side-MRD (right side) = 4
+    Baby-MIND = 5
     - int cyc: Cycle number (0-22), but all the values are -1 because we don't need to think of beam spills
     - int view: horizontal or vertical layer
-      Horizontal layer = 0
-      Vertical layer = 1
+    Horizontal layer = 0
+    Vertical layer = 1
     - int pln: Plane number
-      In Side-MRDs:
-        0 1 2 --------- 7 8 9
-        (upstream) <---> (downstream)
+    In Side-MRDs:
+    0 1 2 --------- 7 8 9
+    (upstream) <---> (downstream)
     - int ch: Channel number
-      In Side-MRDs:
-        0 1 2 --------- 5 6 7
-        (upstream) <---> (downstream)
+    In Side-MRDs:
+    0 1 2 --------- 5 6 7
+    (upstream) <---> (downstream)
     - int adc: High gain ADC count
     - int loadc: Low gain ADC count
     - float pe: Number of p.e. with high gain ADC
@@ -188,7 +188,7 @@ All the classes are in fDefaultReco class.
     - float visecorr: Visible energy supplemented in analysis
     - long tdc: Time from trigger (ns)
     - float time: Hit time
-    - (?) tnearhit // I don't know this type
+    - (?) tnearhit  // I don't know this type
     - float timecorr: Hit time supplemented in analysis
     - (?) xy: Hit X or Y position (Scintillators are not sensible of both positions x and y)
     - (?) z: Hit Z position
@@ -198,13 +198,13 @@ All the classes are in fDefaultReco class.
     - fUniqueID
     - fBits
     - int trackid: GEANT4 particle ID of particles made through neutrino interaction
-                   Particle IDs are shown in below page
-                   https://www.star.bnl.gov/public/comp/simu/gstar/Manual/particle_id.html
+    Particle IDs are shown in below page
+    https://www.star.bnl.gov/public/comp/simu/gstar/Manual/particle_id.html
     - int parentid: GEANT4 parent particle ID of particles made through neutrino interaction
-                    Particle IDs are shown in below page
-                    https://www.star.bnl.gov/public/comp/simu/gstar/Manual/particle_id.html
+    Particle IDs are shown in below page
+    https://www.star.bnl.gov/public/comp/simu/gstar/Manual/particle_id.html
     - int pdg: Particle code (Scheme of PDG)
-               Particle codes are shown in ParticleCode(PDG) file in WAGASCI-BabyMIND-MC repository
+    Particle codes are shown in ParticleCode(PDG) file in WAGASCI-BabyMIND-MC repository
     - float momentum[4]: Particle's initial momentum
     - float ipos[4]: Particle's initial position/time (cm, ns)
     - float fpos[4]: Particle's final position/time (cm, ns)
@@ -218,17 +218,17 @@ All the classes are in fDefaultReco class.
     - fUniqueID
     - fBits
     - int nutype: Neutrino type
-                  Muon neutrino = 1
-                  Anti muon neutrino = 2
-                  Electron neutrino = 3
-                  Anti electron neutrino = 4
+    Muon neutrino = 1
+    Anti muon neutrino = 2
+    Electron neutrino = 3
+    Anti electron neutrino = 4
     - float numomentum[3]: Neutrino momentum (GeV/c)
-                           numomentum[0] = Px
-                           numomentum[1] = Py
-                           numomentum[2] = Pz
+    numomentum[0] = Px
+    numomentum[1] = Py
+    numomentum[2] = Pz
     - float nuE: Neutrino energy (GeV)
     - float norm: Weight for JNUBEAM
-                  It needs in normalization
+    It needs in normalization
     - (?) ng
     - (?) gpid
     - (?) gmec
@@ -245,21 +245,21 @@ All the classes are in fDefaultReco class.
     - float pfsurf: Fermi surface momentum (GeV/c)
     - float vnuclini: Nuclear potential for the target
     - int inttype: Neutrino interaction type
-                   Interaction codes (NEUT) are shown in InteractionCode(NEUT) file in WAGASCI-BabyMIND-MC repository
-                   // I don't make sure that
+    Interaction codes (NEUT) are shown in InteractionCode(NEUT) file in WAGASCI-BabyMIND-MC repository
+    // I don't make sure that
     - int mod: Interaction vertex module
-               The same module number as fB2Hit.mod
+    The same module number as fB2Hit.mod
     - float xnu: Interaction vertex X
     - float ynu: Interaction vertex Y
     - float znu: Interaction vertex Z
     - float totcrsne: Total cross section (x10^{-38} cm^2)
-                      It needs in normalization
+    It needs in normalization
 
 #### B2BasicReconSummary
   - B2BasicReconSummary (fBasicRecon): the class for memorizing the reconstructed track information.
-                                       Values in this class are empty after running GEANT4 MC.
-                                       Information is added when reconstructing tracks from hit information by using the program of track reconstruction.
-                                       // I don't make sure that all the members below are in this class.
+  Values in this class are empty after running GEANT4 MC.
+  Information is added when reconstructing tracks from hit information by using the program of track reconstruction.
+  // I don't make sure that all the members below are in this class.
     - float clstime: Time of cluster
     - float CTtimecorr: Beam timing at CT
     - float clstimecorr: Time of cluster with CT correction
@@ -302,17 +302,17 @@ All the classes are in fDefaultReco class.
 ********************
     norm x totcrsne x (Avogadro constant) x (Density of matter) x (Thickness of matter)
 ********************
-  norm: Normalization factor for JNUBEAM
-  totcrsne: Normalization factor for NEUT (x10^{-38})
-  Avogadro constant = 6.02x10^{23}
-  Density of matter:
-    Plastic scintillator = 1.03 g/cm^3
-    Water = 0.997 g/cm^3
-    Iron = 7.87 g/cm^3
-    Wall = 2.2 g/cm^3
-  Thickness of matter:  // Have to write additional description
-    WAGASCI =
-    Proton module = 46.2 cm
-    Side-MRD =
-    Baby-MIND =
+norm: Normalization factor for JNUBEAM
+totcrsne: Normalization factor for NEUT (x10^{-38})
+Avogadro constant = 6.02x10^{23}
+Density of matter:
+  - Plastic scintillator = 1.03 g/cm^3
+  - Water = 0.997 g/cm^3
+  - Iron = 7.87 g/cm^3
+  - Wall = 2.2 g/cm^3
+Thickness of matter:  // Have to write additional description
+  - WAGASCI =
+  - Proton module = 46.2 cm
+  - Side-MRD =
+  - Baby-MIND =
 - 1 MC file corresponds to 10^{21} POT after weighting the factor.
