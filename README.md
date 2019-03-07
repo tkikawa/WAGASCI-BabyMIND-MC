@@ -297,20 +297,20 @@ All the classes are in fDefaultReco class.
     - int endxch: Most downstream plane in reconstructed X track
     - int endych: Most downstream plane in reconstructed Y track
 
-### Normalization of MC
+## Normalization of MC
 - Following factor must be weighted to all MC events.
 ********************
     norm x totcrsne x (Avogadro constant) x (Density of matter) x (Thickness of matter)
 ********************
-norm: Normalization factor for JNUBEAM  
-totcrsne: Normalization factor for NEUT (x10^{-38})  
-Avogadro constant = 6.02x10^{23}  
-Density of matter:  
+- norm: Normalization factor for JNUBEAM  
+- totcrsne: Normalization factor for NEUT (x10^{-38})  
+- Avogadro constant = 6.02x10^{23}  
+- Density of matter:  
   - Plastic scintillator = 1.03 g/cm^3
   - Water = 0.997 g/cm^3
   - Iron = 7.87 g/cm^3
-  - Wall = 2.2 g/cm^3  
-Thickness of matter:  // Have to write additional description
+  - Wall = 2.2 g/cm^3    
+- Thickness of matter:  // Have to write additional description
   - WAGASCI =
   - Proton module = 46.2 cm
   - Side-MRD =
