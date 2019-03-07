@@ -112,8 +112,8 @@ Write additional information on making sense of it.
 
 ### Trees
 - tree: This tree is used for reconstruction
-- h1: This tree is used for T2K re-weight
-There are the same information as 2 classes, fSimParticle and fSimVertex in h1 tree
+- h1: This tree is used for T2K re-weight.
+There are the same information as 2 classes, fSimParticle and fSimVertex in h1 tree.
 
 ### Classes
 All the classes are in fDefaultReco class.
@@ -150,35 +150,35 @@ All the classes are in fDefaultReco class.
     - fUniqueID
     - fBits
     - float edeposit: Energy deposit (MeV)
-    - int trackid: GEANT4 particle ID of particles detected in each scintillator
-    Particle IDs are shown in below page
+    - int trackid: GEANT4 particle ID of particles detected in each scintillator.
+    Particle IDs are shown in below page.
     https://www.star.bnl.gov/public/comp/simu/gstar/Manual/particle_id.html
-    - int pdg: Particle code (Scheme of PDG) of particles detected in each scintillator
-    Particle codes are shown in ParticleCode(PDG) file in WAGASCI-BabyMIND-MC repository
+    - int pdg: Particle code (Scheme of PDG) of particles detected in each scintillator.
+    Particle codes are shown in ParticleCode(PDG) file in WAGASCI-BabyMIND-MC repository.
 
 #### B2HitSummary               
   - B2HitSummary (fB2Hit): the class for the hit information
     - fUniqueID
     - fBits
     - int mod: Module number (0-5)
-    Proton module = 0
-    WAGASCI1 (upstream) = 1
-    WAGASCI2 (downstream) = 2
-    South Side-MRD (left side) = 3
-    North Side-MRD (right side) = 4
-    Baby-MIND = 5
-    - int cyc: Cycle number (0-22), but all the values are -1 because we don't need to think of beam spills
+    Proton module = 0  
+    WAGASCI1 (upstream) = 1  
+    WAGASCI2 (downstream) = 2  
+    South Side-MRD (left side) = 3  
+    North Side-MRD (right side) = 4  
+    Baby-MIND = 5  
+    - int cyc: Cycle number (0-22), but all the values are -1 because we don't need to think of beam spills.
     - int view: horizontal or vertical layer
-    Horizontal layer = 0
-    Vertical layer = 1
-    - int pln: Plane number
-    In Side-MRDs:
-    0 1 2 --------- 7 8 9
-    (upstream) <---> (downstream)
-    - int ch: Channel number
-    In Side-MRDs:
-    0 1 2 --------- 5 6 7
-    (upstream) <---> (downstream)
+    Horizontal layer = 0  
+    Vertical layer = 1  
+    - int pln: Plane number  
+    In Side-MRDs:  
+    0 1 2 --------- 7 8 9  
+    (upstream) <---> (downstream)  
+    - int ch: Channel number  
+    In Side-MRDs:  
+    0 1 2 --------- 5 6 7  
+    (upstream) <---> (downstream)  
     - int adc: High gain ADC count
     - int loadc: Low gain ADC count
     - float pe: Number of p.e. with high gain ADC
