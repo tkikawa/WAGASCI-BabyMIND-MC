@@ -154,7 +154,8 @@ All the classes are in fDefaultReco class.
     Particle IDs are shown in below page.
     https://www.star.bnl.gov/public/comp/simu/gstar/Manual/particle_id.html
     - int pdg: Particle code (Scheme of PDG) of particles detected in each scintillator  
-    Particle codes are shown in ParticleCode(PDG) file in WAGASCI-BabyMIND-MC repository.
+    Particle codes are shown in below document.
+    http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
 
 #### B2HitSummary               
   - B2HitSummary (fB2Hit): the class for the hit information
@@ -245,7 +246,8 @@ All the classes are in fDefaultReco class.
     - float pfsurf: Fermi surface momentum (GeV/c)
     - float vnuclini: Nuclear potential for the target
     - int inttype: Neutrino interaction type  
-    Interaction codes (NEUT) are shown in InteractionCode(NEUT) file in WAGASCI-BabyMIND-MC repository.  
+    Interaction codes are shown in below document (p.59-60).
+    https://www-he.scphys.kyoto-u.ac.jp/seminar/trape/FY2009/Neut_090616.pdf
     // I don't make sure that
     - int mod: Interaction vertex module  
     The same module number as fB2Hit.mod
