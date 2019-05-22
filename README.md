@@ -248,7 +248,6 @@ All the classes are in fDefaultReco class.
     - int inttype: Neutrino interaction type  
     Interaction codes are shown in below document (p.59-60).
     https://www-he.scphys.kyoto-u.ac.jp/seminar/trape/FY2009/Neut_090616.pdf
-    // I don't make sure that
     - int mod: Interaction vertex module  
     The same module number as fB2Hit.mod
     - float xnu: Interaction vertex X
