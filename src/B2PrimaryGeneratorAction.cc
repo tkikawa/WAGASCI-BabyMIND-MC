@@ -290,6 +290,25 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       pos[2]=-25.0+50.0*(G4UniformRand());
       break;
     }
+    //Vertex in Side-MRD
+    else if( (vtxmod == 3) &&
+             pos[0] <= -46. &&
+             pos[0] >= -70. &&
+             fabs(pos[1]) <= 115.){
+      pos[0] = pos[0] - 50.;
+      pos[1] = pos[1]*115./70.;
+      pos[2] = -40.0+80.0*(G4UniformRand());
+      break;
+    }
+    else if( (vtxmod == 4) &&
+             pos[0] >= 46. &&
+             pos[0] <= 70. &&
+             fabs(pos[1]) <= 115.){
+      pos[0] = pos[0] + 50.;
+      pos[1] = pos[1]*115./70.;
+      pos[2]=-40.0+80.0*(G4UniformRand());
+      break;
+    }
 
     // count events which have vertex out of modules
 #ifdef DEBUG

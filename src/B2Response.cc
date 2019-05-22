@@ -8,6 +8,7 @@ using namespace CLHEP;
 
 const G4double scilen_pm  = 120.;  //cm
 const G4double scilen_wgs = 100.;  //cm
+const G4double scilen_smrd = 180.;  //cm
 const G4double longlen = 130.;  //cm
 const G4double longlen_pm = 120.;  //cm
 const G4double shortlen = 112.;  //cm
@@ -18,6 +19,7 @@ const G4double SciBarFactor = 1.77;  //P.E. factor for SciBar scintillator
 const G4double WagasciFactor = 3.0;  //P.E. factor for WAGASCI scintillator
 const G4double CBIRKS = 0.0208; // Birks' constant used in SciBooNE MC
 const G4double TransTimeInFiber = 1./28.;  //  1cm/2.8e10[cm/s] * 1e9 [ns]
+const G4double TransTimeInFiberSMRD = 1./5.26; // 1cm/5.26cm/ns 
 const G4double Pedestal = 0;// pedeltal of ADC counts
 const G4double Gain = 10;  // Gain ADC counts of high gain channel
 const G4double LowGain  = 1;  // Gain ADC counts of low gain channel
@@ -149,7 +151,9 @@ void B2Response::ApplyFiberResponse(G4double* edep, G4double* time, G4int mod, G
     else if( view==sideview ) x = fabs(scilen_wgs/2. + pos[0]/cm) + fiberbundle;
   }  
   else if(mod==3||mod==4){//SMRD
-    //Must be implemented based in the future
+    x = fabs(scilen_smrd/2. - pos[1]/cm);
+    *time += TransTimeInFiber*x;
+    *time = gRandom->Gaus(*time,1.0);
   }
   else if(mod==5){//BabyMIND
     //Must be implemented based in the future
