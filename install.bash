@@ -13,8 +13,8 @@
 
 UBUNTU="n"
 SL6="n"
-ROOTVERS="6-14-06"
-GEANTVERS="v10.5.0"
+ROOTVERS="6-16-00"
+GEANTVERS="10.5.1"
 CMAKEVERS="3.14.4"
 
 # Define a function that checks if a package is installed
@@ -288,9 +288,8 @@ EOF
 				 ../geant4-sources
 		make -j56
 		make install
-		TEMP=$LD_LIBRARY_PATH
-		source ${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh
-		export LD_LIBRARY_PATH=$TEMP:${HOME}/geant4-${GEANTVERS}/lib64
+		source ${HOME}/geant4-${GEANTVERS}/share/Geant4-${GEANTVERS}/geant4make/geant4make.sh
+		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${HOME}/geant4-${GEANTVERS}/lib64
 		if grep -Fxq "# set Geant4 environment" "${HOME}/.bashrc"
 		then
 			echo "Geant4 environment settings already present in the .bashrc file"
@@ -300,9 +299,8 @@ EOF
 # set Geant4 environment
 if [ -f "${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh" ] ; then
 
-		TEMP=\$LD_LIBRARY_PATH
 		source ${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh
-		export LD_LIBRARY_PATH=\$TEMP:${HOME}/geant4-${GEANTVERS}/lib64
+		export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${HOME}/geant4-${GEANTVERS}/lib64
 fi
 EOF
 		fi
@@ -390,9 +388,10 @@ EOF
 		${CMAKE} \
   			-DCMAKE_C_COMPILER=$(which gcc) \
 			-DCMAKE_CXX_COMPILER=$(which g++) \
-			-Dbuiltin_xrootd=ON \
+			-Dbuiltin_xrootd=ON -Dsqlite=OFF \
 			-DCMAKE_INSTALL_PREFIX=${ROOTDIR}/${ROOTVERS} \
 			-DPYTHON_EXECUTABLE=$(which python3) \
+			-Dfortran=ON \
 			../sources
 		${CMAKE} \
 			--build . --target install -- -j56
@@ -417,14 +416,14 @@ fi
 
 #############################################################################
 #                                                                           #
-#                               CERNLIB 2006                                #
+#                               CERNLIB 2005                                #
 #                                                                           #
 #############################################################################
 
 if [ $SL6 == "y" ] ; then
 	if [ -z "${CERN}" ] ; then
-		export CERN=/home/t2k/tatsuya1/cern/cernlib
-		export CERN_LEVEL=2006
+		export CERN=/home/nu/giorgio/cernlib
+		export CERN_LEVEL=2005
 		export CERN_ROOT=${CERN}/${CERN_LEVEL}
 		export PATH=${CERN_ROOT}/bin:${PATH}
 		export LD_LIBRARY_PATH=${CERN_ROOT}/lib:${LD_LIBRARY_PATH}
@@ -435,9 +434,9 @@ if [ $SL6 == "y" ] ; then
 			cat >> "${HOME}/.bashrc" <<EOF
 
 # set CERNLIB environment
-if [ -d "/home/t2k/tatsuya1/cern/cernlib" ] ; then
-	export CERN=/home/t2k/tatsuya1/cern/cernlib
-	export CERN_LEVEL=2006
+if [ -d "/home/nu/giorgio/cernlib" ] ; then
+	export CERN=/home/nu/giorgio/cernlib
+	export CERN_LEVEL=2005
 	export CERN_ROOT=\${CERN}/\${CERN_LEVEL}
 	export PATH=\${CERN_ROOT}/bin:\${PATH}
 	export LD_LIBRARY_PATH=\${CERN_ROOT}/lib:\${LD_LIBRARY_PATH}
