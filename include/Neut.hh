@@ -16,16 +16,21 @@
 */
 
 // define the PAWC common
-#define PAWC_SIZE 50000
+#define PAWC_SIZE 500000
 typedef struct { float PAW[PAWC_SIZE]; } PAWC_DEF;
 #define PAWC COMMON_BLOCK(PAWC, pawc)
 COMMON_BLOCK_DEF(PAWC_DEF, PAWC);
 
 //
 typedef struct {
-  int NumParticle, ParticleID[NVEC];
-  int ParentID[NVEC], TrackingFlag[NVEC], InteractionCode[NVEC];
-  float AbsMomentum[NVEC], Momentum[NVEC][3], Vertex[3];
+  int NumParticle;
+  int ParticleID[NVEC];
+  int ParentID[NVEC];
+  int TrackingFlag[NVEC];
+  int InteractionCode[NVEC];
+  float AbsMomentum[NVEC];
+  float Momentum[NVEC][3];
+  float Vertex[3];
 } SecondaryVector;
 
 //
