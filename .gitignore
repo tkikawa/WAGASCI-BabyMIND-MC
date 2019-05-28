@@ -17,3 +17,4 @@ raw_data/*
 *.trace
 .DS_Store
 B2MC
+lib/*
