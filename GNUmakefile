@@ -1,3 +1,5 @@
+name = B2MC
+
 ### Compiler version
 CPP_VERSION := $(shell expr `g++ -dumpversion | cut -f1 -d.` \>= 5)
 ifeq "$(CPP_VERSION)" "1"
@@ -10,6 +12,9 @@ LDFLAGS += -L$(shell geant4-config --prefix)/lib
 G4WORKDIR = .
 DATALIBDIR = $(G4WORKDIR)/lib
 CPPFLAGS += -I$(DATALIBDIR)
+G4VIS_USE_OPENGLX = YES
+G4EXLIB = YES
+G4TARGET = $(name)
 # Comment next line if you are not debugging the compilation flags
 CPPVERBOSE = YES
 
@@ -44,11 +49,8 @@ EXTRALIBS += $(DATALIBDIR)/B2ReconSummary.so $(DATALIBDIR)/B2AnaSummary.so
 CPPFLAGS += -g -O0 -Df2cFortran -Wno-write-strings -Wno-overloaded-virtual -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-parameter
 
 ############ MAKE ALL ############
-G4TARGET = B2MC
-G4EXLIB = YES
-
 .PHONY: all
-all: lib bin link
+all: lib link
 
 include $(G4INSTALL)/config/binmake.gmk
 
