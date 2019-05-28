@@ -121,8 +121,7 @@ int main(int argc, char** argv)
   G4RunManager* runManager= new G4RunManager;  //G4cout << G4endl;
 
   // Neut initialization
-  Neut *neut = new Neut;
-  NumberOfEvent = neut->NtupleReadInit(neutfile);
+  Vector.NumberOfEvent = NtupleReadInit(neutfile);
   G4cout << "Number of event :" << NumberOfEvent << G4endl;
 
   // set mandatory user initialization classes...
@@ -146,7 +145,7 @@ int main(int argc, char** argv)
   runManager->SetUserAction(tra);
   G4cout << "TrackingAction init OK" << G4endl;
   
-  runManager-> SetUserAction(new B2PrimaryGeneratorAction(neut, rac, evt, nd, vtx, flav));
+  runManager-> SetUserAction(new B2PrimaryGeneratorAction(rac, evt, nd, vtx, flav));
   G4cout << "PrimaryGenerator init OK" << G4endl;
 	
   // user action classes... (optional)
