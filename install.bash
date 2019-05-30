@@ -416,14 +416,14 @@ fi
 
 #############################################################################
 #                                                                           #
-#                               CERNLIB 2006                                #
+#                               CERNLIB 2005                                #
 #                                                                           #
 #############################################################################
 
 if [ $SL6 == "y" ] ; then
 	if [ -z "${CERN}" ] ; then
 		export CERN=/home/nu/giorgio/cernlib
-		export CERN_LEVEL=2006
+		export CERN_LEVEL=2005
 		export CERN_ROOT=${CERN}/${CERN_LEVEL}
 		export PATH=${CERN_ROOT}/bin:${PATH}
 		export LD_LIBRARY_PATH=${CERN_ROOT}/lib:${LD_LIBRARY_PATH}
@@ -436,7 +436,7 @@ if [ $SL6 == "y" ] ; then
 # set CERNLIB environment
 if [ -d "/home/nu/giorgio/cernlib" ] ; then
 	export CERN=/home/nu/giorgio/cernlib
-	export CERN_LEVEL=2006
+	export CERN_LEVEL=2005
 	export CERN_ROOT=\${CERN}/\${CERN_LEVEL}
 	export PATH=\${CERN_ROOT}/bin:\${PATH}
 	export LD_LIBRARY_PATH=\${CERN_ROOT}/lib:\${LD_LIBRARY_PATH}
