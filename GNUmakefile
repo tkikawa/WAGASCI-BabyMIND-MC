@@ -8,7 +8,7 @@ LDFLAGS += -no-pie
 endif
 
 ### GEANT4
-LDFLAGS += -L$(shell geant4-config --prefix)/lib
+LDFLAGS += -L$(shell geant4-config --prefix)/lib -L$(shell geant4-config --prefix)/lib64
 G4WORKDIR = .
 DATALIBDIR = $(G4WORKDIR)/lib
 CPPFLAGS += -I$(DATALIBDIR)
@@ -25,7 +25,7 @@ CERNLIBS_PATH = $(CERN_ROOT)/lib
 CPPFLAGS += -I$(CERNINC_PATH)
 LDFLAGS += -L$(CERNLIBS_PATH) -Wl,-rpath=$(CERNLIBS_PATH)
 endif
-CERNLIBS := $(shell cernlib packlib kernlib)
+CERNLIBS := $(shell cernlib packlib kernlib) -lgfortran
 EXTRALIBS += $(CERNLIBS)
 
 ### OTHER LIBS
