@@ -209,7 +209,7 @@ then
 				 ../geant4-sources
 		make -j8
 		sudo make install
-		source /usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh
+		source /usr/local/geant4/share/Geant4-${GEANTVERS}/geant4make/geant4make.sh
 		if grep -Fxq "# set PATH to include Geant4" "${HOME}/.bashrc"
 		then
 			echo "Geant 4 source command already present in the .bashrc file"
@@ -217,8 +217,8 @@ then
 			cat >> "${HOME}/.bashrc" <<EOF
 
 # set PATH to include Geant4
-if [ -f "/usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh" ] ; then
-   source /usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh
+if [ -f "/usr/local/geant4/share/Geant4-\${GEANTVERS}/geant4make/geant4make.sh" ] ; then
+   source /usr/local/geant4/share/Geant4-\${GEANTVERS}/geant4make/geant4make.sh
 fi
 EOF
 		fi
@@ -297,9 +297,9 @@ EOF
 			cat >> "${HOME}/.bashrc" <<EOF
 
 # set Geant4 environment
-if [ -f "${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh" ] ; then
+if [ -f "${HOME}/geant4-${GEANTVERS}/share/Geant4-\${GEANTVERS}/geant4make/geant4make.sh" ] ; then
 
-		source ${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh
+		source ${HOME}/geant4-${GEANTVERS}/share/Geant4-\${GEANTVERS}/geant4make/geant4make.sh
 		export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${HOME}/geant4-${GEANTVERS}/lib64
 fi
 EOF
