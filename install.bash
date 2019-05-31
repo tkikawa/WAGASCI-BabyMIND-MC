@@ -217,8 +217,9 @@ then
 			cat >> "${HOME}/.bashrc" <<EOF
 
 # set PATH to include Geant4
-if [ -f "/usr/local/geant4/share/Geant4-${GEANTVERS}/geant4make/geant4make.sh" ] ; then
-   source /usr/local/geant4/share/Geant4-${GEANTVERS}/geant4make/geant4make.sh
+export GEANTVERS=${GEANTVERS}
+if [ -f "/usr/local/geant4/share/Geant4-\${GEANTVERS}/geant4make/geant4make.sh" ] ; then
+   source /usr/local/geant4/share/Geant4-\${GEANTVERS}/geant4make/geant4make.sh
 fi
 EOF
 		fi
@@ -254,8 +255,9 @@ EOF
 				cat >> "${HOME}/.bashrc" <<EOF
 
 # set CMAKE environment
-if [ -d "${HOME}/cmake-${CMAKEVERS}/bin" ] ; then
-   export PATH=${HOME}/cmake-${CMAKEVERS}/bin:\$PATH
+export CMAKEVERS=${CMAKEVERS}
+if [ -d "${HOME}/cmake-\${CMAKEVERS}/bin" ] ; then
+   export PATH=${HOME}/cmake-\${CMAKEVERS}/bin:\$PATH
 fi
 EOF
 			fi
@@ -297,10 +299,11 @@ EOF
 			cat >> "${HOME}/.bashrc" <<EOF
 
 # set Geant4 environment
-if [ -f "${HOME}/geant4-${GEANTVERS}/share/Geant4-${GEANTVERS}/geant4make/geant4make.sh" ] ; then
+export GEANTVERS=${GEANTVERS}
+if [ -f "${HOME}/geant4-\${GEANTVERS}/share/Geant4-\${GEANTVERS}/geant4make/geant4make.sh" ] ; then
 
-		source ${HOME}/geant4-${GEANTVERS}/share/Geant4-${GEANTVERS}/geant4make/geant4make.sh
-		export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${HOME}/geant4-${GEANTVERS}/lib64
+		source ${HOME}/geant4-\${GEANTVERS}/share/Geant4-\${GEANTVERS}/geant4make/geant4make.sh
+		export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${HOME}/geant4-\${GEANTVERS}/lib64
 fi
 EOF
 		fi
@@ -360,8 +363,9 @@ then
 			cat >> "${HOME}/.bashrc" <<EOF
 
 # set ROOT environment
-if [ -f "${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh" ] ; then
-   source ${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh
+export ROOTVERS=${ROOTVERS}
+if [ -f "${ROOTDIR}/\${ROOTVERS}/bin/thisroot.sh" ] ; then
+   source ${ROOTDIR}/\${ROOTVERS}/bin/thisroot.sh
 fi
 EOF
 		fi
@@ -406,8 +410,9 @@ EOF
 			cat >> "${HOME}/.bashrc" <<EOF
 
 # set ROOT environment
-if [ -f "${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh" ] ; then
-   source ${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh
+export ROOTVERS=${ROOTVERS}
+if [ -f "${ROOTDIR}/\${ROOTVERS}/bin/thisroot.sh" ] ; then
+   source ${ROOTDIR}/\${ROOTVERS}/bin/thisroot.sh
 fi
 EOF
 		fi
