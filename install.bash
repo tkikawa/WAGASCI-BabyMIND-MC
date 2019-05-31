@@ -272,7 +272,7 @@ EOF
 		cd
 		git clone https://github.com/Geant4/geant4.git geant4-sources
 		cd geant4-sources
-		git checkout ${GEANTVERS}
+		git checkout v${GEANTVERS}
 		cd ..
 		mkdir -p geant4-${GEANTVERS}-build
 		mkdir -p geant4-${GEANTVERS}
