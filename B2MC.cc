@@ -34,8 +34,6 @@ int main(int argc, char** argv)
   int vtx = 0;
   bool magfld = false;
 
-  int NumberOfEvent = 0;
-  
   int c = -1;
   while ((c = getopt(argc, argv, "ho:i:d:v:w:mb:f:")) != -1) {
     switch(c){
@@ -121,8 +119,13 @@ int main(int argc, char** argv)
   G4RunManager* runManager= new G4RunManager;  //G4cout << G4endl;
 
   // Neut initialization
-  Vector.NumberOfEvent = NtupleReadInit(neutfile);
-  G4cout << "Number of event :" << NumberOfEvent << G4endl;
+  // The Vector global object is initialized and partially populated 
+  if ( NtupleReadInit(neutfile) <= 0 ) {
+    G4cout << "Error when reading the input NEUT file"  << G4endl;
+	exit(1);
+  }
+  
+  G4cout << "Number of events :" << Vector.NumberOfEvents << G4endl;
 
   // set mandatory user initialization classes...
 
@@ -179,7 +182,7 @@ int main(int argc, char** argv)
     }
   
   else { // batch mode
-    runManager->BeamOn(NumberOfEvent);
+    runManager->BeamOn(Vector.NumberOfEvents);
   }
   
   // terminating...

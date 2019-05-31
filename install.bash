@@ -196,7 +196,7 @@ then
 		sudo apt-get install -y git build-essential libexpat1-dev libxmu-dev cmake cmake-curses-gui qt5-default
 		git clone https://github.com/Geant4/geant4.git geant4-sources
 		cd geant4-sources
-		git checkout ${GEANTVERS}
+		git checkout v${GEANTVERS}
 		cd ..
 		mkdir -p geant4-${GEANTVERS}-build
 		cd geant4-${GEANTVERS}-build

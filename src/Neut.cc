@@ -36,7 +36,7 @@ int NtupleReadInit(char *ntpfile)
   HROPEN(60, "neut", ntpfile, " ", lrec, istat);
   if (istat) {
     // std::cout << "Error in opening file ..." << std::endl;
-    return EXIT_FAILURE;
+    return 0;
   }
   std::cout << "===== lrec: " << lrec << std::endl;
   std::cout << "==== ntpfile istat: " << istat << std::endl;
@@ -64,7 +64,11 @@ int NtupleReadInit(char *ntpfile)
   istat = 0;
   HGNTB(NTNEUT, "TARGINFO", 1, istat);
 
-  return Vector.Primary.EventNumber;
+  HNOENT(NTNEUT, Vector.NumberOfEvents);
+
+  HGNT(NTNEUT, 1, ierr);
+  
+  return Vector.NumberOfEvents;
 }
 
 int NtupleReadEvent(SecondaryVector &Secondary, float* direction)
@@ -160,7 +164,7 @@ int NtupleReadEvent(SecondaryVector &Secondary, float* direction)
 #endif
 
 #if 1
-  if(iev > Vector.NumberOfEvent) {
+  if(iev > Vector.NumberOfEvents) {
 	//if(iev>10) {
     std::cout << "End Read Event" << std::endl;
     Vector.Primary.Mode = -1111;

@@ -155,7 +155,7 @@ typedef struct{
 } NeutNeutrino; 
 
 typedef struct {
-  int NumberOfEvent;
+  int NumberOfEvents;
   int ID;
   
   PrimaryVector   Primary;
