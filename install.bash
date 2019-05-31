@@ -38,6 +38,9 @@ function isinstalled {
     fi
 }
 
+# Stop if there is some error
+set -e
+
 # Check the Ubuntu and Scientific Linux releases
 
 if [ ! -f "/usr/bin/lsb_release" ] && [ ! -f "/etc/redhat-release" ];
@@ -59,8 +62,6 @@ elif [ -f "/etc/redhat-release" ] && [ "`cat /etc/redhat-release`" == "Scientifi
 then
     SL6="y"
     CMAKE=cmake
-	# Stop if there is some error
-	set -e
 else
     echo "There is something wrong about OS detection."
     echo "UBUNTU = $UBUNTU"
@@ -181,15 +182,14 @@ then
 	echo "Geant4 INSTALLATION"
 	echo "-------------------"
 
+	#############################################################################
+	#                                                                           #
+	#                                 GEANT 4 (UBUNTU)                          #
+	#                                                                           #
+	#############################################################################
+
 	if [ $UBUNTU == "y" ];
 	then
-
-		#############################################################################
-		#                                                                           #
-		#                                 GEANT 4 (UBUNTU)                          #
-		#                                                                           #
-		#############################################################################
-		
 		cd
 		sudo apt-get update
 		sudo apt-get upgrade
@@ -224,9 +224,6 @@ fi
 EOF
 		fi
 		cd && rm -rf geant4-${GEANTVERS}-build
-	elif [ $SL6 == "y" ];
-	then
-
 
 		#############################################################################
 		#                                                                           #
@@ -234,7 +231,8 @@ EOF
 		#                                                                           #
 		#############################################################################
 		
-		
+	elif [ $SL6 == "y" ];
+	then
 		if [ `${CMAKE} --version | head -n 1 | grep -Po '\d.*.*' | tail -1` != ${CMAKEVERS} ]; then
 			### Install a more recent version of cmake ###
 			cd
@@ -370,16 +368,15 @@ fi
 EOF
 		fi
 		rm -rf ${ROOTDIR}/${ROOTVERS}-build
-	elif [ $SL6 == "y" ];
-	then
-
 
 		#############################################################################
 		#                                                                           #
 		#                                 ROOT (SL6)                                #
 		#                                                                           #
 		#############################################################################
-		
+
+	elif [ $SL6 == "y" ];
+	then
 		echo $LD_LIBRARY_PATH
 		# Download and install ROOT
 		ROOTDIR="${HOME}/ROOT"
@@ -421,7 +418,7 @@ fi
 
 #############################################################################
 #                                                                           #
-#                               CERNLIB 2006                                #
+#                               CERNLIB 2006 (SL6)                          #
 #                                                                           #
 #############################################################################
 
@@ -449,6 +446,13 @@ fi
 EOF
 		fi
 	fi
+
+	#############################################################################
+	#                                                                           #
+	#                               CERNLIB 2006 (UBUNTU)                       #
+	#                                                                           #
+	#############################################################################
+	
 elif [ $UBUNTU == "y" ] ; then
 	if ! isinstalled cernlib ; then
 		# CERNLIB
