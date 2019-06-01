@@ -45,11 +45,10 @@ const double distance_pln=2.3;//(cm)
 const double diff=-0.15;//(cm) difference of scibar and ingrid type start
 
 
-B2PrimaryGeneratorAction::B2PrimaryGeneratorAction(Neut *neut0, B2RunAction* rac, B2EventAction* evt,int nd, int vtx, int flavor0)
+B2PrimaryGeneratorAction::B2PrimaryGeneratorAction(B2RunAction* rac, B2EventAction* evt,int nd, int vtx, int flavor0)
   :runaction(rac)
 {
   eventaction = evt;
-  neut_fe = neut0;
   module_mode = nd-1;
   vtxmod = vtx-1;
   neutrino_flavor = flavor0;
@@ -75,7 +74,6 @@ B2PrimaryGeneratorAction::~B2PrimaryGeneratorAction()
 void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   SecondaryVector Secondary;
-  Neut *neut = neut_fe;
   int fdid = 0;
   int mode = 0;
   float pos[3];
@@ -185,7 +183,7 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //Neutirno mode
   while(1){// start loop of neut file
 
-    mode = neut->NtupleReadEvent(Secondary,direction);
+    mode = NtupleReadEvent(Secondary, direction);
     if( mode==-1111 ){
       G4cout <<"Aboart Run (mode =" << mode << G4endl;
       G4RunManager* runManager = G4RunManager::GetRunManager();
@@ -195,7 +193,7 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     }
 
     // Check flavor ====================
-    int  neutrino_flavor_tmp =  (int)(((neut->Vector).Neutrino.ProductionMode)/10);
+    int  neutrino_flavor_tmp =  (int)((Vector.Neutrino.ProductionMode)/10);
     if( neutrino_flavor_tmp != neutrino_flavor ) {
 #ifdef DEBUG
       G4cout << " === This neutrino id : " << neutrino_flavor_tmp
@@ -205,11 +203,11 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     }
 
     // Define neutrino interaction vertex
-    fdid = (neut->Vector).Neutrino.FDID;
+    fdid = Vector.Neutrino.FDID;
 
     // X-Y vertex
-    pos[0] = (neut->Vector).Neutrino.x;
-    pos[1] = (neut->Vector).Neutrino.y;
+    pos[0] = Vector.Neutrino.x;
+    pos[1] = Vector.Neutrino.y;
 
     //Vertex in Proton Module
     if( vtxmod == 0 &&
@@ -290,6 +288,25 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       pos[2]=-25.0+50.0*(G4UniformRand());
       break;
     }
+    //Vertex in Side-MRD
+    else if( (vtxmod == 3) &&
+             pos[0] <= -46. &&
+             pos[0] >= -70. &&
+             fabs(pos[1]) <= 115.){
+      pos[0] = pos[0] - 50.;
+      pos[1] = pos[1]*115./70.;
+      pos[2] = -40.0+80.0*(G4UniformRand());
+      break;
+    }
+    else if( (vtxmod == 4) &&
+             pos[0] >= 46. &&
+             pos[0] <= 70. &&
+             fabs(pos[1]) <= 115.){
+      pos[0] = pos[0] + 50.;
+      pos[1] = pos[1]*115./70.;
+      pos[2]=-40.0+80.0*(G4UniformRand());
+      break;
+    }
 
     // count events which have vertex out of modules
 #ifdef DEBUG
@@ -305,29 +322,29 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   pos[2] = pos[2] + offsetz;
 
   // Input Neut file info to output ROOT class
-  neut->ID = vtxmod;
+  Vector.ID = vtxmod;
   for(int i=0;i<3;i++) (runaction->vertex)[i] = pos[i];
   
   B2SimVertexSummary* simvertex = new B2SimVertexSummary();
   simvertex -> Clear();
   simvertex -> nutype   = neutrino_flavor;
-  simvertex -> inttype  = (neut->Vector).Primary.Mode;
-  simvertex -> nuE      = (neut->Vector).Neutrino.Energy;
+  simvertex -> inttype  = Vector.Primary.Mode;
+  simvertex -> nuE      = Vector.Neutrino.Energy;
   simvertex -> xnu      = pos[0];
   simvertex -> ynu      = pos[1];
   simvertex -> znu      = pos[2];
   simvertex -> mod      = vtxmod;
-  simvertex -> norm	= (neut->Vector).Neutrino.Norm;
-  simvertex -> totcrsne	= (neut->Vector).neutcrs.Totcrsne;
+  simvertex -> norm	= Vector.Neutrino.Norm;
+  simvertex -> totcrsne	= Vector.neutcrs.Totcrsne;
   
   int npi_plus=0,npi_minus=0,npi_zero=0, npro=0, nneu=0;
   for(int ipart=0; ipart<Secondary.NumParticle; ipart++) {
     if( Secondary.TrackingFlag[ipart]==1 ) {
-      if((neut->Vector).Secondary.ParticleID[ipart]==211)npi_plus++;
-      if((neut->Vector).Secondary.ParticleID[ipart]==-211)npi_minus++;
-      if((neut->Vector).Secondary.ParticleID[ipart]==111)npi_zero++;
-      if((neut->Vector).Secondary.ParticleID[ipart]==2212)npro++;
-      if((neut->Vector).Secondary.ParticleID[ipart]==2112)nneu++;
+      if(Vector.Secondary.ParticleID[ipart]==211)npi_plus++;
+      if(Vector.Secondary.ParticleID[ipart]==-211)npi_minus++;
+      if(Vector.Secondary.ParticleID[ipart]==111)npi_zero++;
+      if(Vector.Secondary.ParticleID[ipart]==2212)npro++;
+      if(Vector.Secondary.ParticleID[ipart]==2112)nneu++;
     }
   }
 
@@ -337,13 +354,13 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 #ifdef DEBUG
   G4cout << "\n=== Neutrino Information from Jnubeam ===" << G4endl;
-  G4cout << "Norm: " <<  (neut->Vector).Neutrino.Norm << G4endl;
-  G4cout << "Totcrsne: " <<  (neut->Vector).neutcrs.Totcrsne << G4endl;
-  G4cout << "ParentID: " << (neut->Vector).Neutrino.ParentID;
-  G4cout << "  Neut Production Mode: " << (neut->Vector).Neutrino.ProductionMode;
-  G4cout << "  Neutrino.FDID: " << (neut->Vector).Neutrino.FDID << G4endl;
-  G4cout << "Neut interaction Mode: " << (neut->Vector).Primary.Mode << G4endl;
-  G4cout << "Energy[GeV]: " << (neut->Vector).Neutrino.Energy;
+  G4cout << "Norm: " <<  Vector.Neutrino.Norm << G4endl;
+  G4cout << "Totcrsne: " <<  Vector.neutcrs.Totcrsne << G4endl;
+  G4cout << "ParentID: " << Vector.Neutrino.ParentID;
+  G4cout << "  Neut Production Mode: " << Vector.Neutrino.ProductionMode;
+  G4cout << "  Neutrino.FDID: " << Vector.Neutrino.FDID << G4endl;
+  G4cout << "Neut interaction Mode: " << Vector.Primary.Mode << G4endl;
+  G4cout << "Energy[GeV]: " << Vector.Neutrino.Energy;
   G4cout << "  Direction: {" << direction[0] << ", " << direction[1] << ", " << direction[2] << "}" << G4endl;
   G4cout << "Vertex(cm): {" << pos[0] << ", "<< pos[1] << ", "<< pos[2] << "}";
   G4cout << "  Module: " << vtxmod << "\n\n";
@@ -352,56 +369,56 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   particleGun->SetParticlePosition(G4ThreeVector(pos[0]*cm,pos[1]*cm,pos[2]*cm));
   
   // Input Neut info for T2KReWeight to SK__h1 class
-  runaction -> numnu = (neut->Vector).Primary.NumParticle;
-  runaction -> mode  = (neut->Vector).Primary.Mode;
+  runaction -> numnu = Vector.Primary.NumParticle;
+  runaction -> mode  = Vector.Primary.Mode;
   for ( int i = 0; i<50; i++ ) {
-    runaction -> ipnu[i] = (neut->Vector).Primary.ParticleID[i];
-    runaction -> pnu[i] = (neut->Vector).Primary.AbsMomentum[i];
+    runaction -> ipnu[i] = Vector.Primary.ParticleID[i];
+    runaction -> pnu[i] = Vector.Primary.AbsMomentum[i];
     for ( int j = 0 ; j < 3 ; j++ ){
-      runaction -> dirnu[i][j] = (neut->Vector).Primary.Momentum[i][j] / (neut->Vector).Primary.AbsMomentum[i];
+      runaction -> dirnu[i][j] = Vector.Primary.Momentum[i][j] / Vector.Primary.AbsMomentum[i];
     }
   }
   
-  runaction -> Crsx   = (neut->Vector).Crs.Crsx;
-  runaction -> Crsy   = (neut->Vector).Crs.Crsy;
-  runaction -> Crsz   = (neut->Vector).Crs.Crsz;
-  runaction -> Crsphi = (neut->Vector).Crs.Crsphi;
+  runaction -> Crsx   = Vector.Crs.Crsx;
+  runaction -> Crsy   = Vector.Crs.Crsy;
+  runaction -> Crsz   = Vector.Crs.Crsz;
+  runaction -> Crsphi = Vector.Crs.Crsphi;
   
-  runaction -> Nvert = (neut->Vector).Fsi.Nvert;
+  runaction -> Nvert = Vector.Fsi.Nvert;
   for (int ivert=0; ivert<150; ivert++) {
-    runaction -> Iflgvert[ivert] = (neut->Vector).Fsi.Iflgvert[ivert];
+    runaction -> Iflgvert[ivert] = Vector.Fsi.Iflgvert[ivert];
     for (int j=0; j<3; j++)
-      runaction -> Posvert[ivert][j] = (neut->Vector).Fsi.Posvert[ivert][j];
+      runaction -> Posvert[ivert][j] = Vector.Fsi.Posvert[ivert][j];
   }
   
-  runaction -> Nvcvert = (neut->Vector).Fsi.Nvcvert;
+  runaction -> Nvcvert = Vector.Fsi.Nvcvert;
   for (int ip=0; ip<900; ip++) {
     
-    runaction -> Abspvert[ip]  = (neut->Vector).Fsi.Abspvert[ip];
-    runaction -> Abstpvert[ip] = (neut->Vector).Fsi.Abstpvert[ip];
-    runaction -> Ipvert[ip]    = (neut->Vector).Fsi.Ipvert[ip];
-    runaction -> Iverti[ip]    = (neut->Vector).Fsi.Iverti[ip];
-    runaction -> Ivertf[ip]    = (neut->Vector).Fsi.Ivertf[ip];
+    runaction -> Abspvert[ip]  = Vector.Fsi.Abspvert[ip];
+    runaction -> Abstpvert[ip] = Vector.Fsi.Abstpvert[ip];
+    runaction -> Ipvert[ip]    = Vector.Fsi.Ipvert[ip];
+    runaction -> Iverti[ip]    = Vector.Fsi.Iverti[ip];
+    runaction -> Ivertf[ip]    = Vector.Fsi.Ivertf[ip];
     
     for (int j=0; j<3; j++)
-      runaction -> Dirvert[ip][j] = (neut->Vector).Fsi.Dirvert[ip][j];
+      runaction -> Dirvert[ip][j] = Vector.Fsi.Dirvert[ip][j];
   }
   
-  runaction -> Fsiprob = (neut->Vector).Fsi.Fsiprob;
-  runaction -> Numbndn = (neut->Vector).target_info.Numbndn;
-  runaction -> Numbndp = (neut->Vector).target_info.Numbndp;
-  runaction -> Numfrep = (neut->Vector).target_info.Numfrep;
-  runaction -> Numatom = (neut->Vector).target_info.Numatom;
-  runaction -> Ibound  = (neut->Vector).Fsi.Ibound;
-  runaction -> Npvc    = (neut->Vector).Secondary.NumParticle;
+  runaction -> Fsiprob = Vector.Fsi.Fsiprob;
+  runaction -> Numbndn = Vector.target_info.Numbndn;
+  runaction -> Numbndp = Vector.target_info.Numbndp;
+  runaction -> Numfrep = Vector.target_info.Numfrep;
+  runaction -> Numatom = Vector.target_info.Numatom;
+  runaction -> Ibound  = Vector.Fsi.Ibound;
+  runaction -> Npvc    = Vector.Secondary.NumParticle;
   for (int i=0; i<100; i++) {
-    runaction -> Ipvc[i]    = (neut->Vector).Secondary.ParticleID[i];
-    runaction -> Ichvc[i]   = (neut->Vector).Secondary.TrackingFlag[i];
-    runaction -> Iorgvc[i]  = (neut->Vector).Secondary.ParentID[i];
-    runaction -> Iflvc[i]   = (neut->Vector).Secondary.InteractionCode[i];
-    runaction -> Abspvc[i]  = (neut->Vector).Secondary.AbsMomentum[i];
+    runaction -> Ipvc[i]    = Vector.Secondary.ParticleID[i];
+    runaction -> Ichvc[i]   = Vector.Secondary.TrackingFlag[i];
+    runaction -> Iorgvc[i]  = Vector.Secondary.ParentID[i];
+    runaction -> Iflvc[i]   = Vector.Secondary.InteractionCode[i];
+    runaction -> Abspvc[i]  = Vector.Secondary.AbsMomentum[i];
     for (int j=0; j<3; j++)
-      runaction -> Pvc[i][j]     = (neut->Vector).Secondary.Momentum[i][j];
+      runaction -> Pvc[i][j]     = Vector.Secondary.Momentum[i][j];
   }
   
   
@@ -411,12 +428,12 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   /*
     NeutInfoSummary* neutinfo = new NeutInfoSummary();
     neutinfo -> Clear();
-    neutinfo -> Mode = (neut->Vector).Primary.Mode;
-    neutinfo -> Numnu = (neut->Vector).Primary.NumParticle;
+    neutinfo -> Mode = Vector.Primary.Mode;
+    neutinfo -> Numnu = Vector.Primary.NumParticle;
     for(int i=0;i<(neutinfo->Numnu);i++) {
-    neutinfo -> Ipnu[i] = (neut->Vector).Primary.ParticleID[i];
-    neutinfo -> Abspnu[i] = (neut->Vector).Primary.AbsMomentum[i];
-    for(int j=0;j<3;j++) neutinfo -> Pnu[i][j] = (neut->Vector).Primary.Momentum[i][j];
+    neutinfo -> Ipnu[i] = Vector.Primary.ParticleID[i];
+    neutinfo -> Abspnu[i] = Vector.Primary.AbsMomentum[i];
+    for(int j=0;j<3;j++) neutinfo -> Pnu[i][j] = Vector.Primary.Momentum[i][j];
     }
     runaction -> GetEvtSum() -> AddNeut( neutinfo );
   */
@@ -427,13 +444,13 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     if( Secondary.TrackingFlag[ipart]==1 ) {
 
 #ifdef DEBUG
-      G4cout << "Particle: " << (neut->Vector).Secondary.ParticleID[ipart] << G4endl;
+      G4cout << "Particle: " << Vector.Secondary.ParticleID[ipart] << G4endl;
       G4cout << "Index: " << ipart << G4endl;
-      G4cout << "Parent Index: " << (neut->Vector).Secondary.ParentID[ipart] -1 << G4endl;
-      G4cout << "Tracking Flag: " << (neut->Vector).Secondary.TrackingFlag[ipart] << G4endl;
-      G4cout << "Interaction code: " << (neut->Vector).Secondary.InteractionCode[ipart] << G4endl;
+      G4cout << "Parent Index: " << Vector.Secondary.ParentID[ipart] -1 << G4endl;
+      G4cout << "Tracking Flag: " << Vector.Secondary.TrackingFlag[ipart] << G4endl;
+      G4cout << "Interaction code: " << Vector.Secondary.InteractionCode[ipart] << G4endl;
       G4cout << "Momentum[MeV/c]: ";
-      for (int k=0;k<3;k++)   G4cout << (neut->Vector).Secondary.Momentum[ipart][k] << " ";
+      for (int k=0;k<3;k++)   G4cout << Vector.Secondary.Momentum[ipart][k] << " ";
       G4cout << G4endl;
 #endif
       
@@ -459,11 +476,11 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       
 #ifdef DEBUG
       G4cout << "ipart: " << ipart << "\n";
-      G4cout << "PID:" << (neut->Vector).Secondary.ParticleID[ipart] << "\n";
-      G4cout << "Tracking Flag: " << (neut->Vector).Secondary.TrackingFlag[ipart] << "\n";
+      G4cout << "PID:" << Vector.Secondary.ParticleID[ipart] << "\n";
+      G4cout << "Tracking Flag: " << Vector.Secondary.TrackingFlag[ipart] << "\n";
       G4cout << "Kinetic Energy[MeV]: " << energy << G4endl;;
       G4cout << "Momentum[MeV/c]: ";
-      for (int k=0;k<3;k++)   G4cout << (neut->Vector).Secondary.Momentum[ipart][k] << " ";
+      for (int k=0;k<3;k++)   G4cout << Vector.Secondary.Momentum[ipart][k] << " ";
       G4cout << G4endl;;
 #endif
       

@@ -13,8 +13,8 @@
 
 UBUNTU="n"
 SL6="n"
-ROOTVERS="6-14-06"
-GEANTVERS="v10.5.0"
+ROOTVERS="6-16-00"
+GEANTVERS="10.5.1"
 CMAKEVERS="3.14.4"
 
 # Define a function that checks if a package is installed
@@ -38,6 +38,9 @@ function isinstalled {
     fi
 }
 
+# Stop if there is some error
+set -e
+
 # Check the Ubuntu and Scientific Linux releases
 
 if [ ! -f "/usr/bin/lsb_release" ] && [ ! -f "/etc/redhat-release" ];
@@ -59,8 +62,6 @@ elif [ -f "/etc/redhat-release" ] && [ "`cat /etc/redhat-release`" == "Scientifi
 then
     SL6="y"
     CMAKE=cmake
-	# Stop if there is some error
-	set -e
 else
     echo "There is something wrong about OS detection."
     echo "UBUNTU = $UBUNTU"
@@ -181,22 +182,21 @@ then
 	echo "Geant4 INSTALLATION"
 	echo "-------------------"
 
+	#############################################################################
+	#                                                                           #
+	#                                 GEANT 4 (UBUNTU)                          #
+	#                                                                           #
+	#############################################################################
+
 	if [ $UBUNTU == "y" ];
 	then
-
-		#############################################################################
-		#                                                                           #
-		#                                 GEANT 4 (UBUNTU)                          #
-		#                                                                           #
-		#############################################################################
-		
 		cd
 		sudo apt-get update
 		sudo apt-get upgrade
 		sudo apt-get install -y git build-essential libexpat1-dev libxmu-dev cmake cmake-curses-gui qt5-default
 		git clone https://github.com/Geant4/geant4.git geant4-sources
 		cd geant4-sources
-		git checkout ${GEANTVERS}
+		git checkout v${GEANTVERS}
 		cd ..
 		mkdir -p geant4-${GEANTVERS}-build
 		cd geant4-${GEANTVERS}-build
@@ -209,7 +209,7 @@ then
 				 ../geant4-sources
 		make -j8
 		sudo make install
-		source /usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh
+		source /usr/local/geant4/share/Geant4-${GEANTVERS}/geant4make/geant4make.sh
 		if grep -Fxq "# set PATH to include Geant4" "${HOME}/.bashrc"
 		then
 			echo "Geant 4 source command already present in the .bashrc file"
@@ -217,15 +217,13 @@ then
 			cat >> "${HOME}/.bashrc" <<EOF
 
 # set PATH to include Geant4
-if [ -f "/usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh" ] ; then
-   source /usr/local/geant4/share/Geant4-10.5.0/geant4make/geant4make.sh
+export GEANTVERS=${GEANTVERS}
+if [ -f "/usr/local/geant4/share/Geant4-\${GEANTVERS}/geant4make/geant4make.sh" ] ; then
+   source /usr/local/geant4/share/Geant4-\${GEANTVERS}/geant4make/geant4make.sh
 fi
 EOF
 		fi
 		cd && rm -rf geant4-${GEANTVERS}-build
-	elif [ $SL6 == "y" ];
-	then
-
 
 		#############################################################################
 		#                                                                           #
@@ -233,7 +231,8 @@ EOF
 		#                                                                           #
 		#############################################################################
 		
-		
+	elif [ $SL6 == "y" ];
+	then
 		if [ `${CMAKE} --version | head -n 1 | grep -Po '\d.*.*' | tail -1` != ${CMAKEVERS} ]; then
 			### Install a more recent version of cmake ###
 			cd
@@ -254,8 +253,9 @@ EOF
 				cat >> "${HOME}/.bashrc" <<EOF
 
 # set CMAKE environment
-if [ -d "${HOME}/cmake-${CMAKEVERS}/bin" ] ; then
-   export PATH=${HOME}/cmake-${CMAKEVERS}/bin:\$PATH
+export CMAKEVERS=${CMAKEVERS}
+if [ -d "${HOME}/cmake-\${CMAKEVERS}/bin" ] ; then
+   export PATH=${HOME}/cmake-\${CMAKEVERS}/bin:\$PATH
 fi
 EOF
 			fi
@@ -272,7 +272,7 @@ EOF
 		cd
 		git clone https://github.com/Geant4/geant4.git geant4-sources
 		cd geant4-sources
-		git checkout ${GEANTVERS}
+		git checkout v${GEANTVERS}
 		cd ..
 		mkdir -p geant4-${GEANTVERS}-build
 		mkdir -p geant4-${GEANTVERS}
@@ -288,9 +288,8 @@ EOF
 				 ../geant4-sources
 		make -j56
 		make install
-		TEMP=$LD_LIBRARY_PATH
-		source ${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh
-		export LD_LIBRARY_PATH=$TEMP:${HOME}/geant4-${GEANTVERS}/lib64
+		source ${HOME}/geant4-${GEANTVERS}/share/Geant4-${GEANTVERS}/geant4make/geant4make.sh
+		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${HOME}/geant4-${GEANTVERS}/lib64
 		if grep -Fxq "# set Geant4 environment" "${HOME}/.bashrc"
 		then
 			echo "Geant4 environment settings already present in the .bashrc file"
@@ -298,11 +297,11 @@ EOF
 			cat >> "${HOME}/.bashrc" <<EOF
 
 # set Geant4 environment
-if [ -f "${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh" ] ; then
+export GEANTVERS=${GEANTVERS}
+if [ -f "${HOME}/geant4-\${GEANTVERS}/share/Geant4-\${GEANTVERS}/geant4make/geant4make.sh" ] ; then
 
-		TEMP=\$LD_LIBRARY_PATH
-		source ${HOME}/geant4-${GEANTVERS}/share/Geant4-10.5.0/geant4make/geant4make.sh
-		export LD_LIBRARY_PATH=\$TEMP:${HOME}/geant4-${GEANTVERS}/lib64
+		source ${HOME}/geant4-\${GEANTVERS}/share/Geant4-\${GEANTVERS}/geant4make/geant4make.sh
+		export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:${HOME}/geant4-\${GEANTVERS}/lib64
 fi
 EOF
 		fi
@@ -362,22 +361,22 @@ then
 			cat >> "${HOME}/.bashrc" <<EOF
 
 # set ROOT environment
-if [ -f "${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh" ] ; then
-   source ${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh
+export ROOTVERS=${ROOTVERS}
+if [ -f "${ROOTDIR}/\${ROOTVERS}/bin/thisroot.sh" ] ; then
+   source ${ROOTDIR}/\${ROOTVERS}/bin/thisroot.sh
 fi
 EOF
 		fi
 		rm -rf ${ROOTDIR}/${ROOTVERS}-build
-	elif [ $SL6 == "y" ];
-	then
-
 
 		#############################################################################
 		#                                                                           #
 		#                                 ROOT (SL6)                                #
 		#                                                                           #
 		#############################################################################
-		
+
+	elif [ $SL6 == "y" ];
+	then
 		echo $LD_LIBRARY_PATH
 		# Download and install ROOT
 		ROOTDIR="${HOME}/ROOT"
@@ -390,9 +389,10 @@ EOF
 		${CMAKE} \
   			-DCMAKE_C_COMPILER=$(which gcc) \
 			-DCMAKE_CXX_COMPILER=$(which g++) \
-			-Dbuiltin_xrootd=ON \
+			-Dbuiltin_xrootd=ON -Dsqlite=OFF \
 			-DCMAKE_INSTALL_PREFIX=${ROOTDIR}/${ROOTVERS} \
 			-DPYTHON_EXECUTABLE=$(which python3) \
+			-Dfortran=ON \
 			../sources
 		${CMAKE} \
 			--build . --target install -- -j56
@@ -407,8 +407,9 @@ EOF
 			cat >> "${HOME}/.bashrc" <<EOF
 
 # set ROOT environment
-if [ -f "${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh" ] ; then
-   source ${ROOTDIR}/${ROOTVERS}/bin/thisroot.sh
+export ROOTVERS=${ROOTVERS}
+if [ -f "${ROOTDIR}/\${ROOTVERS}/bin/thisroot.sh" ] ; then
+   source ${ROOTDIR}/\${ROOTVERS}/bin/thisroot.sh
 fi
 EOF
 		fi
@@ -417,13 +418,13 @@ fi
 
 #############################################################################
 #                                                                           #
-#                               CERNLIB 2006                                #
+#                               CERNLIB 2006 (SL6)                          #
 #                                                                           #
 #############################################################################
 
 if [ $SL6 == "y" ] ; then
 	if [ -z "${CERN}" ] ; then
-		export CERN=/home/t2k/tatsuya1/cern/cernlib
+		export CERN=/home/nu/giorgio/cernlib
 		export CERN_LEVEL=2006
 		export CERN_ROOT=${CERN}/${CERN_LEVEL}
 		export PATH=${CERN_ROOT}/bin:${PATH}
@@ -435,8 +436,8 @@ if [ $SL6 == "y" ] ; then
 			cat >> "${HOME}/.bashrc" <<EOF
 
 # set CERNLIB environment
-if [ -d "/home/t2k/tatsuya1/cern/cernlib" ] ; then
-	export CERN=/home/t2k/tatsuya1/cern/cernlib
+if [ -d "/home/nu/giorgio/cernlib" ] ; then
+	export CERN=/home/nu/giorgio/cernlib
 	export CERN_LEVEL=2006
 	export CERN_ROOT=\${CERN}/\${CERN_LEVEL}
 	export PATH=\${CERN_ROOT}/bin:\${PATH}
@@ -445,6 +446,13 @@ fi
 EOF
 		fi
 	fi
+
+	#############################################################################
+	#                                                                           #
+	#                               CERNLIB 2006 (UBUNTU)                       #
+	#                                                                           #
+	#############################################################################
+	
 elif [ $UBUNTU == "y" ] ; then
 	if ! isinstalled cernlib ; then
 		# CERNLIB

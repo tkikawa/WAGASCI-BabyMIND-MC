@@ -15,4 +15,7 @@ raw_data/*
 *.replay
 **/build
 *.trace
+.DS_Store
 B2MC
+lib/*
+tmp/*

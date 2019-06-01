@@ -15,7 +15,7 @@ class G4Event;
 class B2PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 public:
-  B2PrimaryGeneratorAction(Neut*, B2RunAction*, B2EventAction*, int, int, int);
+  B2PrimaryGeneratorAction(B2RunAction*, B2EventAction*, int, int, int);
   ~B2PrimaryGeneratorAction();
 
 public:
@@ -32,8 +32,6 @@ private:
 
   B2RunAction* runaction;
   B2EventAction* eventaction;
-  
-  Neut *neut_fe;
 };
 
 #endif
