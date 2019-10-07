@@ -15,7 +15,7 @@ UBUNTU="n"
 SL6="n"
 ROOTVERS="6-16-00"
 GEANTVERS="10.5.1"
-CMAKEVERS="3.14.4"
+CMAKEVERS="3.15.0"
 
 # Define a function that checks if a package is installed
 
