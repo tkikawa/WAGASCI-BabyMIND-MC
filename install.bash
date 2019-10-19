@@ -463,6 +463,8 @@ elif [ $UBUNTU == "y" ] ; then
 		mkdir cernlib_debuild
 		cd cernlib_debuild
 		wget http://mirrors.kernel.org/ubuntu/pool/main/libx/libxp/libxp-dev_1.0.2-1ubuntu1_amd64.deb
+		wget http://archive.ubuntu.com/ubuntu/pool/main/libx/libxp/libxp6_1.0.2-1ubuntu1_amd64.deb
+		sudo apt-get install -y ./libxp6_1.0.2-1ubuntu1_amd64.deb
 		sudo apt-get install -y ./libxp-dev_1.0.2-1ubuntu1_amd64.deb
 		sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
 		sudo apt-get update
